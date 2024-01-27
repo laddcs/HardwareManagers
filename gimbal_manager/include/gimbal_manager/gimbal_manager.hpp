@@ -10,10 +10,11 @@ class GimbalManager : public rclcpp::Node
 {
     public:
         explicit GimbalManager(const rclcpp::NodeOptions & options);
+        ~GimbalManager();
 
     private:
-        Serial_Port *serial_port_;
-        Gimbal_Interface *gimbal_interface_;
+        std::shared_ptr<Gimbal_Interface> gimbal_interface_;
+        std::shared_ptr<Serial_Port> serial_port_;
 };
 
 } // namespace gimbal_manager
