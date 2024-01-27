@@ -1,0 +1,9 @@
+/data:
+  gimbal_manager:
+    ros__parameters:
+      # Serial port params
+      serial_port: /dev/ttyUSB0
+      baud_rate: 115200
+
+      # Gimbal interface params
+      gimbal_potocol: 0
