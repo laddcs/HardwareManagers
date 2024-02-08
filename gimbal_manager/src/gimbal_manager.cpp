@@ -71,7 +71,7 @@ namespace gimbal_manager
     {
         this->declare_parameter("serial_port", rclcpp::ParameterValue("/dev/ttyUSB0"));
         this->declare_parameter("baud_rate", rclcpp::ParameterValue(115200));
-        this->declare_parameter("gimbal_protocol", rclcpp::ParameterValue(0));
+        this->declare_parameter("gimbal_protocol", rclcpp::ParameterValue(1));
     }
 
 } // namespace gimbal_interface

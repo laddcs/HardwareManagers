@@ -1,4 +1,4 @@
-/data:
+/hardware:
   gimbal_manager:
     ros__parameters:
       # Serial port params
@@ -6,4 +6,4 @@
       baud_rate: 115200
 
       # Gimbal interface params
-      gimbal_potocol: 0
+      gimbal_potocol: 1
