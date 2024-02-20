@@ -42,6 +42,7 @@ add_library(gimbal_manager SHARED
 ament_target_dependencies(gimbal_manager
   "rclcpp"
   "rclcpp_components"
+  "geometry_msgs"
   "gSDK")
 
 rclcpp_components_register_nodes(gimbal_manager "gimbal_manager::GimbalManager")
