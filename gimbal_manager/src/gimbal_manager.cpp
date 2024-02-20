@@ -1,4 +1,5 @@
 #include <gimbal_manager/gimbal_manager.hpp>
+using namespace std::chrono_literals;
 
 namespace gimbal_manager
 {
@@ -49,6 +50,9 @@ namespace gimbal_manager
 
         RCLCPP_INFO(this->get_logger(), "Starting Interface");
         gimbal_interface_->start();
+
+        attitude_timer_ = this->create_wall_timer(100ms, std::bind(&GimbalManager::attitude_timer_callback, this) );
+        attitude_publisher_ = this->create_publisher<geometry_msgs::msg::QuaternionStamped>("gimbal/attitude",10);
     }
 
     GimbalManager::~GimbalManager()
@@ -72,6 +76,12 @@ namespace gimbal_manager
         this->declare_parameter("serial_port", rclcpp::ParameterValue("/dev/ttyUSB0"));
         this->declare_parameter("baud_rate", rclcpp::ParameterValue(115200));
         this->declare_parameter("gimbal_protocol", rclcpp::ParameterValue(1));
+    }
+
+    void GimbalManager::attitude_timer_callback()
+    {
+        attitude<float> gimbal_attitude = gimbal_interface_->get_gimbal_attitude();
+        RCLCPP_INFO(this->get_logger(),"roll: %f, pitch: %f, yaw: %f", gimbal_attitude.roll, gimbal_attitude.pitch, gimbal_attitude.yaw);
     }
 
 } // namespace gimbal_interface
