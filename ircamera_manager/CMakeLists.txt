@@ -22,7 +22,7 @@ find_package(rclcpp_components REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(rcutils REQUIRED)
 
-include_directories(include 
+include_directories(include
 /usr/include/libirimager/)
 
 #################
@@ -41,7 +41,7 @@ target_link_libraries(ircamera_manager
   irimageprocessing
   ircore
   udev
-  usb-1.0
+#  usb-1.0
 )
 
 rclcpp_components_register_nodes(ircamera_manager "ircamera_manager::IRCameraManager")
