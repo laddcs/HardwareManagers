@@ -21,6 +21,8 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(rcutils REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(image_transport REQUIRED)
 
 include_directories(include
 /usr/include/libirimager/)
@@ -34,7 +36,9 @@ add_library(ircamera_manager SHARED
 
 ament_target_dependencies(ircamera_manager
   "rclcpp"
-  "rclcpp_components")
+  "rclcpp_components"
+  "sensor_msgs"
+  "image_transport")
 
 target_link_libraries(ircamera_manager
   irimager
