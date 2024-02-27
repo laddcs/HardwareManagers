@@ -43,7 +43,7 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         evo::IRDevice* dev_;
 
         // Optris image processing pipeline
-        evo::IRImager imager_;
+        evo::IRImager* imager_;
 
         // Writes raw serialized data stream from IRDevice to disk, this is the most efficient way to store the data (without losing precision)
         std::shared_ptr<evo::IRFileWriter> writer_;
