@@ -48,21 +48,6 @@ target_link_libraries(ircamera_manager
 
 rclcpp_components_register_nodes(ircamera_manager "ircamera_manager::IRCameraManager")
 
-add_executable(manual_composition_test
-  src/manual_composition.cpp)
-
-target_link_libraries(manual_composition_test
-ircamera_manager
-irimager
-irimageprocessing
-ircore
-udev
-usb-1.0)
-
-ament_target_dependencies(manual_composition_test
-  "rclcpp"
-  "rclcpp_components")
-
 ############
 # Install ##
 ############

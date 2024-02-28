@@ -15,14 +15,13 @@
        temperature: This value specify the selection of the calibration temperature range. 
                     Only predefined temperature ranges are valid which can be obtained through the data sheet of your camera or PIX Connect.
   -->
-  <!--
   <fov>0</fov>
   <temperature>
-    <min>-20</min>
-    <max>100</max>
+    <min>150</min>
+    <max>900</max>
   </temperature>
   <optics_text></optics_text>
-  -->
+
   <framerate>32.0</framerate>             <!-- only scaled down frame rate, maximum framerate depends on the chosen <videoformatindex> -->
   <bispectral>0</bispectral>              <!-- 0=only thermal sensor, 1=bispectral technology (only PI200/PI230) -->
   <autoflag>

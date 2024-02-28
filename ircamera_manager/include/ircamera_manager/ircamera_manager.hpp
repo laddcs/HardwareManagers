@@ -57,6 +57,11 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         sensor_msgs::msg::Image thermalImage_;
         rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr thermalPub_;
 
+        // Energy image publishing
+        unsigned short * energyBuffer_;
+        sensor_msgs::msg::Image energyImage_;
+        rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr energyPub_;
+
         // Loop that checks for a new IR image and passes it to the image processing pipeline
         // Executed in the deviceThread_
         void deviceThreadRunner();
