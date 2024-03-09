@@ -9,7 +9,6 @@
 #include <libirimager/IRImager.h>
 #include <libirimager/IRImagerClient.h>
 #include <libirimager/IRLogger.h>
-#include <libirimager/IRFileWriter.h>
 
 namespace ircamera_manager
 {
@@ -36,17 +35,11 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         // IR device parameters object, used to initialize device and imager
         evo::IRDeviceParams params_;
 
-        // Header for raw data stream
-        evo::RawdataHeader header_;
-
         // Pointer to IR device manager
         evo::IRDevice* dev_;
 
         // Optris image processing pipeline
         evo::IRImager* imager_;
-
-        // Writes raw serialized data stream from IRDevice to disk, this is the most efficient way to store the data (without losing precision)
-        std::shared_ptr<evo::IRFileWriter> writer_;
 
         unsigned char* bufferRaw_;
         char nmea_[GPSBUFFERSIZE];

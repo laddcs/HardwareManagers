@@ -79,17 +79,6 @@ namespace ircamera_manager
             if(retVal == evo::IRIMAGER_SUCCESS)
             {
                 imager_->process(bufferRaw_);
-/*
-                if(writer_->canDoWriteOperations())
-                {
-                    writer_->write(timestamp, bufferRaw_, chunk, dev_->getRawBufferSize(), nmea_);
-                }
-
-                if((++serializedImages)%1000==0)
-                {
-                    chunk++;
-                }
-*/
             }
             if(retVal == evo::IRIMAGER_DISCONNECTED)
             {
@@ -154,12 +143,6 @@ namespace ircamera_manager
             RCLCPP_ERROR(this->get_logger(), "Unable to initialize imager");
         }
         
-    }
-
-    void IRCameraManager::initializeFileWriter()
-    {
-        // Initialize gps header as zeros
-        memset(nmea_, 0, GPSBUFFERSIZE*sizeof(*nmea_));
     }
 
     void IRCameraManager::initializeParameters()
