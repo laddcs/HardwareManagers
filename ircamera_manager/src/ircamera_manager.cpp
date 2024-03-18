@@ -47,6 +47,9 @@ namespace ircamera_manager
         energyImage_.data.resize(energyImage_.height * energyImage_.step);
         energyBuffer_ = new unsigned short[energyImage_.height * energyImage_.width];
 
+        // Initialize flag pub
+        flagPub_ = this->create_publisher<hardware_msgs::msg::Flag>("ir_flag", qos);
+
         dev_->startStreaming();
         RCLCPP_INFO(this->get_logger(), "Started Streaming!");
 
@@ -112,7 +115,13 @@ namespace ircamera_manager
 
     void IRCameraManager::onFlagStateChange(evo::EnumFlagState flagstate, void* arg)
     {
+        hardware_msgs::msg::Flag msg;
+        
+        msg.header.stamp = rclcpp::Node::now();
+        msg.header.frame_id = "ircamera";
+        msg.flag_state = flagstate;
 
+        flagPub_->publish(msg);
     }
 
     void IRCameraManager::onProcessExit(void* arg)
@@ -142,7 +151,6 @@ namespace ircamera_manager
         {
             RCLCPP_ERROR(this->get_logger(), "Unable to initialize imager");
         }
-        
     }
 
     void IRCameraManager::initializeParameters()

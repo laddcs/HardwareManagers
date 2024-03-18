@@ -57,7 +57,7 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr energyPub_;
 
         // Flag state publisher
-        
+        rclcpp::Publisher<hardware_msgs::msg::Flag>::SharedPtr flagPub_;
 
         //Subscribers
         rclcpp::Subscription<px4_msgs::msg::RcChannels>::SharedPtr rcSub_;
