@@ -3,12 +3,14 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <image_transport/image_transport.hpp>
+
 #include <sensor_msgs/msg/image.hpp>
+#include <px4_msgs/msg/rc_channels.hpp>
+#include <hardware_msgs/msg/flag.hpp>
 
 #include <libirimager/IRDevice.h>
 #include <libirimager/IRImager.h>
 #include <libirimager/IRImagerClient.h>
-#include <libirimager/IRLogger.h>
 
 namespace ircamera_manager
 {
@@ -42,7 +44,6 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         evo::IRImager* imager_;
 
         unsigned char* bufferRaw_;
-        char nmea_[GPSBUFFERSIZE];
         bool run_;
         std::thread* deviceThread_;
 
@@ -54,6 +55,12 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         unsigned short * energyBuffer_;
         sensor_msgs::msg::Image energyImage_;
         rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr energyPub_;
+
+        // Flag state publisher
+        
+
+        //Subscribers
+        rclcpp::Subscription<px4_msgs::msg::RcChannels>::SharedPtr rcSub_;
 
         // Loop that checks for a new IR image and passes it to the image processing pipeline
         // Executed in the deviceThread_
@@ -67,6 +74,9 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
 
         // Initialize node parameters
         void initializeParameters();
+
+        //Subscriber Callbacks
+        void rcCB(const px4_msgs::msg::RcChannels::UniquePtr msg);
 };
 
 } // namespace ircamera_manager

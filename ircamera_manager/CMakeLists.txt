@@ -16,13 +16,16 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(builtin_interfaces REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(rcutils REQUIRED)
-find_package(sensor_msgs REQUIRED)
 find_package(image_transport REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+
+find_package(sensor_msgs REQUIRED)
+find_package(px4_msgs REQUIRED)
+find_package(hardware_msgs REQUIRED)
 
 include_directories(include /usr/include/libirimager/)
 
@@ -37,6 +40,8 @@ ament_target_dependencies(ircamera_manager
   "rclcpp"
   "rclcpp_components"
   "sensor_msgs"
+  "px4_msgs"
+  "hardware_msgs"
   "image_transport")
 
 target_link_libraries(ircamera_manager

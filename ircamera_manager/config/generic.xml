@@ -17,8 +17,8 @@
   -->
   <fov>0</fov>
   <temperature>
-    <min>150</min>
-    <max>900</max>
+    <min>-20</min>
+    <max>100</max>
   </temperature>
   <optics_text></optics_text>
 

@@ -12,6 +12,7 @@ class Logger : public rclcpp::Node
 {
     public:
         Logger(const rclcpp::NodeOptions & options);
+        ~Logger();
 
     private:
         // Bag writer object
@@ -19,11 +20,15 @@ class Logger : public rclcpp::Node
 
         // Subscriptions
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr energySub_;
-        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr tempSub_;
+        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr thermalSub_;
 
         // Subscription Callbacks
         void energyCB(const sensor_msgs::msg::Image::ConstSharedPtr & msg);
-        void tempCB(const sensor_msgs::msg::Image::ConstSharedPtr & msg);
+        void thermalCB(const sensor_msgs::msg::Image::ConstSharedPtr & msg);
+
+        void initializeParameters();
+
+        void createBag();
 };
 
 } //namespace logger

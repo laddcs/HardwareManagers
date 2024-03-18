@@ -18,6 +18,8 @@
   <build_depend>tf2_ros</build_depend>
   <build_depend>rcutils</build_depend>
   <build_depend>sensor_msgs</build_depend>
+  <build_depend>px4_msgs</build_depend>
+  <build_depend>hardware_msgs</build_depend>
   <build_depend>image_transport</build_depend>
 
   <exec_depend>launch_ros</exec_depend>
@@ -26,12 +28,15 @@
   <exec_depend>tf2_ros</exec_depend>
   <exec_depend>rcutils</exec_depend>
   <exec_depend>sensor_msgs</exec_depend>
+  <exec_depend>hardware_msgs</exec_depend>
   <exec_depend>image_transport</exec_depend>
 
   <exec_depend>rosidl_default_runtime</exec_depend>
   <exec_depend>ros2launch</exec_depend>
 
   <depend>launch</depend>
+  
+  <member_of_group>rosidl_interface_packages</member_of_group>
 
   <export>
     <build_type>ament_cmake</build_type>
