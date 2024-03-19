@@ -80,7 +80,7 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         void initializeParameters();
 
         //Subscriber Callbacks
-        void rcCB(const px4_msgs::msg::RcChannels::UniquePtr msg);
+        void rcCB(const px4_msgs::msg::RcChannels::UniquePtr & msg);
 };
 
 } // namespace ircamera_manager

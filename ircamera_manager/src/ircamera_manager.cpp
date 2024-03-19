@@ -137,7 +137,7 @@ namespace ircamera_manager
         (void) arg;
     }
 
-    void IRCameraManager::rcCB(const px4_msgs::msg::RcChannels::UniquePtr msg)
+    void IRCameraManager::rcCB(const px4_msgs::msg::RcChannels::UniquePtr & msg)
     {
         // If the flag is not open, do not attempt to change the temp range
         if (flagstate_ != evo::EnumFlagState::irFlagOpen)

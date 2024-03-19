@@ -42,6 +42,15 @@ namespace logger
             }
         );
 
+        writer_->create_topic(
+            {
+                "flag_state",
+                "hardware_msgs/msg/Flag",
+                rmw_get_serialization_format(), 
+                ""
+            }
+        );
+
         // Create subscriptions
         energySub_ = this->create_subscription<sensor_msgs::msg::Image>(
             "/hardware/energy_image",
@@ -53,6 +62,12 @@ namespace logger
             "/hardware/thermal_image",
             qos,
             std::bind(&Logger::thermalCB, this, _1)
+        );
+
+        flagSub_ = this->create_subscription<hardware_msgs::msg::Flag>(
+            "/hardware/ir_flag",
+            qos,
+            std::bind(&Logger::flagCB, this, _1)
         );
     }
     
@@ -76,6 +91,12 @@ namespace logger
     {
         writer_->write(*msg, "thermal_image", rclcpp::Node::now());
     }
+
+    void Logger::flagCB(const hardware_msgs::msg::Flag::ConstSharedPtr & msg)
+    {
+        writer_->write(*msg, "flag_state", rclcpp::Node::now());
+    }
+
 } // namespace logger
 
 // Register the node as a component

@@ -23,9 +23,10 @@ find_package(tf2_ros REQUIRED)
 find_package(rcutils REQUIRED)
 find_package(rosbag2_cpp REQUIRED)
 
-#find_package(px4_msgs REQUIRED)
+find_package(px4_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
+find_package(hardware_msgs REQUIRED)
 find_package(image_transport REQUIRED)
 
 include_directories(include)
@@ -43,6 +44,8 @@ ament_target_dependencies(logger
   "rosbag2_cpp"
   "geometry_msgs"
   "sensor_msgs"
+  "hardware_msgs"
+  "px4_msgs"
   "image_transport")
 
 rclcpp_components_register_nodes(logger "logger::Logger")
