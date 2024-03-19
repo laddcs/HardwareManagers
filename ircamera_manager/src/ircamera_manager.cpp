@@ -1,5 +1,7 @@
 #include <ircamera_manager/ircamera_manager.hpp>
 
+using std::placeholders::_1;
+
 namespace ircamera_manager
 {
     IRCameraManager::IRCameraManager(const rclcpp::NodeOptions & options) : Node("ircamera_manager", options)
@@ -50,6 +52,13 @@ namespace ircamera_manager
         // Initialize flag pub
         flagPub_ = this->create_publisher<hardware_msgs::msg::Flag>("ir_flag", qos);
 
+        // Initialize RC Sub
+        rcSub_ = this->create_subscription<px4_msgs::msg::RcChannels>(
+            "/fmu/out/rc_channels",
+            qos,
+            std::bind(&IRCameraManager::rcCB, this, _1)
+        );
+
         dev_->startStreaming();
         RCLCPP_INFO(this->get_logger(), "Started Streaming!");
 
@@ -70,14 +79,10 @@ namespace ircamera_manager
 
     void IRCameraManager::deviceThreadRunner()
     {
-        int serializedImages = 0;
-        int chunk = 1;
-        double timestamp;
-
         auto durInSec = std::chrono::duration<double>(1.0/imager_->getMaxFramerate());
         while(run_)
         {
-            int retVal = dev_->getFrame(bufferRaw_, &timestamp);
+            int retVal = dev_->getFrame(bufferRaw_);
 
             if(retVal == evo::IRIMAGER_SUCCESS)
             {
@@ -110,7 +115,7 @@ namespace ircamera_manager
 
     void IRCameraManager::onVisibleFrame(unsigned char* image, unsigned int w, unsigned int h, evo::IRFrameMetadata meta, void* arg)
     {
-
+        (void) arg;
     }
 
     void IRCameraManager::onFlagStateChange(evo::EnumFlagState flagstate, void* arg)
@@ -121,12 +126,26 @@ namespace ircamera_manager
         msg.header.frame_id = "ircamera";
         msg.flag_state = flagstate;
 
+        // Set the internal flagstate
+        flagstate_ = flagstate;
+
         flagPub_->publish(msg);
     }
 
     void IRCameraManager::onProcessExit(void* arg)
     {
+        (void) arg;
+    }
 
+    void IRCameraManager::rcCB(const px4_msgs::msg::RcChannels::UniquePtr msg)
+    {
+        // If the flag is not open, do not attempt to change the temp range
+        if (flagstate_ != evo::EnumFlagState::irFlagOpen)
+        {
+            return;
+        }
+
+        double rcCommand = msg->channels[msg->function[msg->FUNCTION_AUX_2]];
     }
 
     void IRCameraManager::initializeIRDevice()

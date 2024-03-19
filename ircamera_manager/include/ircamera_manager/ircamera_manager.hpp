@@ -34,6 +34,10 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
 
 
     private:
+
+        // Current Flag State
+        evo::EnumFlagState flagstate_;
+
         // IR device parameters object, used to initialize device and imager
         evo::IRDeviceParams params_;
 
