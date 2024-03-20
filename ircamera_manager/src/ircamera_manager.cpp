@@ -146,11 +146,43 @@ namespace ircamera_manager
         }
 
         double rcCommand = msg->channels[msg->function[msg->FUNCTION_AUX_2]];
+
+        bool validParam = false;
+
+        // Low Range
+        if (rcCommand < 0)
+        {
+            validParam = imager_->setTempRange(-20, 100);
+            if (validParam)
+            {
+                imager_->forceFlagEvent(1000.f);
+            }
+        }
+
+        // Mid Range
+        if (rcCommand == 0)
+        {
+            validParam = imager_->setTempRange(0, 250);
+            if (validParam)
+            {
+                imager_->forceFlagEvent(1000.f);
+            }
+        }
+
+        // High Range
+        if (rcCommand > 0)
+        {
+            validParam = imager_->setTempRange(150, 900);
+            if (validParam)
+            {
+                imager_->forceFlagEvent(1000.f);
+            }
+        }
     }
 
     void IRCameraManager::initializeIRDevice()
     {
-        std::string xmlPath = "/DroneWorkspace/HardwareManagers/ircamera_manager/config/generic.xml";
+        std::string xmlPath = this->get_parameter("device_xml_config").as_string();
         evo::IRDeviceParamsReader::readXML(xmlPath.c_str(), params_);
 
         RCLCPP_INFO(this->get_logger(), "Read XML Parameters!");

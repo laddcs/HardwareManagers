@@ -11,7 +11,7 @@ def generate_launch_description():
     pkg_name = "logger"
 
     log_path = "/DroneWorkspace/data/"
-    log_id = "test_log"
+    log_id = "test_launch"
 
     namespace = 'hardware'
     ld.add_action(ComposableNodeContainer(
