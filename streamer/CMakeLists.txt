@@ -29,7 +29,10 @@ find_package(cv_bridge REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(CUDA REQUIRED)
 
-include_directories(include ${OpenCV_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})
+include_directories(include 
+  ${OpenCV_INCLUDE_DIRS} 
+  ${CUDA_INCLUDE_DIRS})
+  
 link_directories(/usr/lib/aarch64-linux-gnu/tegra)
 
 #################
@@ -47,7 +50,8 @@ ament_target_dependencies(streamer
   "cv_bridge")
 
 target_link_libraries(streamer 
-	${OpenCV_LIBS})
+	${OpenCV_LIBS} 
+  ${CUDA_LIBRARIES})
 
 rclcpp_components_register_nodes(streamer "streamer::Streamer")
 
