@@ -39,7 +39,7 @@ class Streamer : public rclcpp::Node
         // Video Streamer
         cv::VideoWriter writer_;
 
-        void imageCB(const sensor_msgs::msg::Image::ConstSharedPtr & msg);
+        void imageCB(const sensor_msgs::msg::Image::ConstSharedPtr msg);
 };
 
 } // namespace streamer

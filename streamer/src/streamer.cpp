@@ -14,14 +14,8 @@ namespace streamer
         size_t out_pixels = width * height * 3 * sizeof(unsigned  char);
 
         // Allocate unified buffers
-        bool in_alloc = cudaMallocManaged(&unified_frame_in_ptr_, in_pixels);
-        bool out_alloc = cudaMallocManaged(&unified_frame_out_ptr_, out_pixels);
-
-        if (!in_alloc || !out_alloc)
-        {
-            RCLCPP_ERROR(this->get_logger(), "Unable to allocate unified buffers, fail to start stream!");
-            return;
-        }
+        cudaMallocManaged(&unified_frame_in_ptr_, in_pixels);
+        cudaMallocManaged(&unified_frame_out_ptr_, out_pixels);
 
         frame_in_ = cv::Mat(height, width, CV_16U, unified_frame_in_ptr_);
         d_frame_in_ = cv::cuda::GpuMat(height, width, CV_16U, unified_frame_in_ptr_);
@@ -33,7 +27,16 @@ namespace streamer
         rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
         auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
-        std::string pipeline = "appsrc ! x264enc tune=zerolatency bitrate=500 speed-preset=superfast ! rtph264pay ! udpsink host=127.0.0.1 port=5000";
+        std::string pipeline = "appsrc ! \
+            video/x-raw, format=RGB, width=382, height=288, framerate=30/1 ! \
+            videoconvert ! \
+            video/x-raw, format=I420 ! \
+            queue ! \
+            x264enc tune=zerolatency bitrate=1000 speed-preset=superfast ! \
+            h264parse ! \
+            rtph264pay ! \
+            udpsink host=host.docker.internal port=5602";
+        
         writer_ = cv::VideoWriter(pipeline, cv::CAP_GSTREAMER, 0, 30.0, cv::Size(382, 288), true);
         if (writer_.isOpened())
         {
@@ -62,13 +65,13 @@ namespace streamer
         writer_.release();
     }
 
-    void Streamer::imageCB(const sensor_msgs::msg::Image::ConstSharedPtr & msg)
+    void Streamer::imageCB(const sensor_msgs::msg::Image::ConstSharedPtr msg)
     {
-        image_ptr_ = cv_bridge::toCvCopy(*msg, msg->encoding);
+        image_ptr_ = cv_bridge::toCvCopy(msg, msg->encoding);
         image_ptr_->image.copyTo(frame_in_);
 
         // Perform colorspace conversion using gpu
-        cv::cuda::cvtColor(d_frame_in_, d_frame_out_, cv::COLOR_GRAY2BGR, 0);
+        cv::cuda::cvtColor(d_frame_in_, d_frame_out_, cv::COLOR_GRAY2RGB, 0);
 
         writer_.write(frame_out_);
     }
