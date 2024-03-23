@@ -5,6 +5,7 @@
 
 #include <opencv2/opencv.hpp>
 #include <opencv2/cudaimgproc.hpp>
+#include <opencv2/cudawarping.hpp>
 #include <opencv2/core/cuda.hpp>
 
 #include <cuda_runtime.h>
@@ -22,13 +23,13 @@ class Streamer : public rclcpp::Node
         ~Streamer();
 
     private:
-        void *unified_frame_in_ptr_;
-        void *unified_frame_out_ptr_;
-
         cv_bridge::CvImagePtr image_ptr_;
 
         cv::Mat frame_in_;
         cv::cuda::GpuMat d_frame_in_;
+
+        cv::cuda::GpuMat d_frame_convert_;
+        cv::cuda::GpuMat d_frame_resize_;
 
         cv::Mat frame_out_;
         cv::cuda::GpuMat d_frame_out_;
