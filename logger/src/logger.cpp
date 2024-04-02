@@ -87,7 +87,7 @@ namespace logger
         }
 
         // Close the bag on disarm
-        if ((msg->arming_state == msg->ARMING_STATE_DISARMED) && bagOpen_)
+        if ((msg->arming_state == msg->ARMING_STATE_SHUTDOWN) && bagOpen_)
         {
             RCLCPP_INFO(this->get_logger(), "Closing Bag!");
             bagOpen_ = false;
