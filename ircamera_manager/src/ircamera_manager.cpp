@@ -49,8 +49,9 @@ namespace ircamera_manager
         energyImage_.data.resize(energyImage_.height * energyImage_.step);
         energyBuffer_ = new unsigned short[energyImage_.height * energyImage_.width];
 
-        // Initialize flag pub
+        // Initialize general publishers
         flagPub_ = this->create_publisher<hardware_msgs::msg::Flag>("ir_flag", qos);
+        imageFlagPub_ = this->create_publisher<hardware_msgs::msg::IRImage>("ir_image", 100);
 
         // Initialize RC Sub
         rcSub_ = this->create_subscription<px4_msgs::msg::RcChannels>(
@@ -80,13 +81,28 @@ namespace ircamera_manager
     void IRCameraManager::deviceThreadRunner()
     {
         auto durInSec = std::chrono::duration<double>(1.0/imager_->getMaxFramerate());
+        double timestamp;
+        int frame_count = 0;
+
         while(run_)
         {
-            int retVal = dev_->getFrame(bufferRaw_);
+            int retVal = dev_->getFrame(bufferRaw_, &timestamp);
 
             if(retVal == evo::IRIMAGER_SUCCESS)
             {
+                frame_count++;
+
+                hardware_msgs::msg::IRImage msg;
+
+                msg.header.frame_id = "ircamera";
+                msg.header.stamp = rclcpp::Node::now();
+                
+                msg.frame_count = frame_count;
+                msg.frame_time = rclcpp::Time(static_cast<uint64_t>(timestamp * 10e8));
+
                 imager_->process(bufferRaw_);
+
+                imageFlagPub_->publish(msg);
             }
             if(retVal == evo::IRIMAGER_DISCONNECTED)
             {
@@ -94,6 +110,8 @@ namespace ircamera_manager
             } 
 
             std::this_thread::sleep_for(durInSec);
+
+            RCLCPP_INFO(this->get_logger(), "RetVal: %i", retVal);
         }
     }
 

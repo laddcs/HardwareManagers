@@ -10,7 +10,7 @@
        See documentation for further information: http://documentation.evocortex.com/libirimager2/html/index.html
        By default, the first available optic and the first meaningful temperature range are selected.
 
-       fov: If the camera is calibrated for multiple optics with different field of views, the fiel of view of the used optic needs to be set here.
+       fov: If the camera is calibrated for multiple optics with different fiel of views, the fiel of view of the used optic needs to be set here.
        optics_text: If the camera is calibrated for multiple optics with the same field of view, the additional name of the optic need to be set here.
        temperature: This value specify the selection of the calibration temperature range. 
                     Only predefined temperature ranges are valid which can be obtained through the data sheet of your camera or PIX Connect.

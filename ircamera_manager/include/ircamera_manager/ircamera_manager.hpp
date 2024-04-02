@@ -7,6 +7,7 @@
 #include <sensor_msgs/msg/image.hpp>
 #include <px4_msgs/msg/rc_channels.hpp>
 #include <hardware_msgs/msg/flag.hpp>
+#include <hardware_msgs/msg/ir_image.hpp>
 
 #include <libirimager/IRDevice.h>
 #include <libirimager/IRImager.h>
@@ -60,8 +61,9 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         sensor_msgs::msg::Image energyImage_;
         rclcpp::Publisher<sensor_msgs::msg::Image>::SharedPtr energyPub_;
 
-        // Flag state publisher
+        // General Publishers
         rclcpp::Publisher<hardware_msgs::msg::Flag>::SharedPtr flagPub_;
+        rclcpp::Publisher<hardware_msgs::msg::IRImage>::SharedPtr imageFlagPub_;
 
         //Subscribers
         rclcpp::Subscription<px4_msgs::msg::RcChannels>::SharedPtr rcSub_;
