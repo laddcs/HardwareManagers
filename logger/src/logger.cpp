@@ -20,13 +20,7 @@ namespace logger
 
         writer_ = std::make_unique<rosbag2_cpp::Writer>();
 
-        // Create subscriptions
-        energySub_ = this->create_subscription<sensor_msgs::msg::Image>(
-            "/hardware/energy_image",
-            qos,
-            std::bind(&Logger::energyCB, this, _1)
-        );
-
+        // Create Subscriptions
         thermalSub_ = this->create_subscription<sensor_msgs::msg::Image>(
             "/hardware/thermal_image",
             qos,
@@ -44,6 +38,12 @@ namespace logger
             qos,
             std::bind(&Logger::px4StatusCB, this, _1)
         );
+
+        px4VehicleOdometrySub_ = this->create_subscription<px4_msgs::msg::VehicleOdometry>(
+            "/fmu/out/vehicle_odometry",
+            qos,
+            std::bind(&Logger::px4VehicleOdometryCB, this, _1)
+        );
     }
     
     Logger::~Logger()
@@ -57,45 +57,52 @@ namespace logger
         this->declare_parameter("log_path", rclcpp::ParameterValue("/DroneWorkspace/data/"));
     }
 
-    void Logger::energyCB(const sensor_msgs::msg::Image::ConstSharedPtr & msg) const
+    void Logger::thermalCB(const sensor_msgs::msg::Image::ConstSharedPtr msg)
     {
         if (!bagOpen_) {return;}
-        writer_->write(*msg, "energy_image", rclcpp::Node::now());
+        writer_->write(msg, "/hardware/thermal_image", rclcpp::Node::now());
     }
 
-    void Logger::thermalCB(const sensor_msgs::msg::Image::ConstSharedPtr & msg) const
+    void Logger::flagCB(const hardware_msgs::msg::Flag::ConstPtr msg)
     {
         if (!bagOpen_) {return;}
-        writer_->write(*msg, "thermal_image", rclcpp::Node::now());
-    }
-
-    void Logger::flagCB(const hardware_msgs::msg::Flag::ConstSharedPtr & msg) const
-    {
-        if (!bagOpen_) {return;}
-        writer_->write(*msg, "flag_state", rclcpp::Node::now());
+        writer_->write(msg, "/hardware/flag_state", rclcpp::Node::now());
     }
 
     void Logger::px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstPtr msg)
     {
+        
+
         // Open the bag on arming
         if ((msg->arming_state == msg->ARMING_STATE_ARMED) && !bagOpen_)
         {
             RCLCPP_INFO(this->get_logger(), "Opening Bag!");
             openBag();
             bagOpen_ = true;
+
+            writer_->write(msg, "/hardware/vehicle_status", rclcpp::Node::now());
+
             return;
         }
+
+        if (bagOpen_) {writer_->write(msg, "/hardware/vehicle_status", rclcpp::Node::now());}
 
         // Close the bag on disarm
         if ((msg->arming_state == msg->ARMING_STATE_SHUTDOWN) && bagOpen_)
         {
             RCLCPP_INFO(this->get_logger(), "Closing Bag!");
             bagOpen_ = false;
+            
+            // This should work with fixed rosbag2 repo
             writer_->close();
-            auto writer = std::make_unique<rosbag2_cpp::Writer>();
-            writer_.reset(writer.get());
             return;
         }
+    }
+
+    void Logger::px4VehicleOdometryCB(const px4_msgs::msg::VehicleOdometry::ConstPtr msg)
+    {
+        if (!bagOpen_) {return;}
+        writer_->write(msg, "/hardware/vehicle_odometry", rclcpp::Node::now());
     }
 
     void Logger::openBag()
@@ -109,7 +116,7 @@ namespace logger
 
         writer_->create_topic(
             {
-                "thermal_image",
+                "/hardware/thermal_image",
                 "sensor_msgs/msg/Image",
                 rmw_get_serialization_format(),
                 ""
@@ -118,17 +125,26 @@ namespace logger
 
         writer_->create_topic(
             {
-                "energy_image",
-                "sensor_msgs/msg/Image",
-                rmw_get_serialization_format(),
-                ""
-            }
-        );
-
-        writer_->create_topic(
-            {
-                "flag_state",
+                "/hardware/flag_state",
                 "hardware_msgs/msg/Flag",
+                rmw_get_serialization_format(), 
+                ""
+            }
+        );
+
+        writer_->create_topic(
+            {
+                "/hardware/vehicle_status",
+                "px4_msgs/msg/VehicleStatus",
+                rmw_get_serialization_format(),
+                ""
+            }
+        );
+
+        writer_->create_topic(
+            {
+                "/hardware/vehicle_odometry",
+                "px4_msgs/msg/VehicleOdometry",
                 rmw_get_serialization_format(), 
                 ""
             }
