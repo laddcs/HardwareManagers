@@ -10,7 +10,7 @@ namespace ircamera_manager
 
         initializeIRDevice();
 
-        auto qos = rclcpp::QoS(
+        auto video_qos = rclcpp::QoS(
             rclcpp::QoSInitialization(
                 // The history policy determines how messages are saved until taken by
                 // the reader.
@@ -28,10 +28,13 @@ namespace ircamera_manager
         // makes no guarantees about the order or reliability of delivery.
         // Options are: SYSTEM_DEFAULT, RELIABLE, BEST_EFFORT and UNKNOWN
         rmw_qos_reliability_policy_t reliability_policy = RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT;
-        qos.reliability(reliability_policy);
+        video_qos.reliability(reliability_policy);
+
+        rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
+        auto px4_qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
         // Initialize thermal pub
-        thermalPub_ = this->create_publisher<sensor_msgs::msg::Image>("thermal_image", qos);
+        thermalPub_ = this->create_publisher<sensor_msgs::msg::Image>("thermal_image", video_qos);
         thermalImage_.header.frame_id = "ircamera";
         thermalImage_.height = imager_->getHeight();
         thermalImage_.width = imager_->getWidth();
@@ -40,7 +43,7 @@ namespace ircamera_manager
         thermalImage_.data.resize(thermalImage_.height * thermalImage_.step);
 
         // Initialize energy pub
-        energyPub_ = this->create_publisher<sensor_msgs::msg::Image>("energy_image", qos);
+        energyPub_ = this->create_publisher<sensor_msgs::msg::Image>("energy_image", video_qos);
         energyImage_.header.frame_id = "ircamera";
         energyImage_.height = imager_->getHeight();
         energyImage_.width = imager_->getWidth();
@@ -50,12 +53,12 @@ namespace ircamera_manager
         energyBuffer_ = new unsigned short[energyImage_.height * energyImage_.width];
 
         // Initialize general publishers
-        flagPub_ = this->create_publisher<hardware_msgs::msg::Flag>("ir_flag", qos);
+        flagPub_ = this->create_publisher<hardware_msgs::msg::Flag>("ir_flag", px4_qos);
 
         // Initialize RC Sub
         rcSub_ = this->create_subscription<px4_msgs::msg::RcChannels>(
             "/fmu/out/rc_channels",
-            qos,
+            px4_qos,
             std::bind(&IRCameraManager::rcCB, this, _1)
         );
 
