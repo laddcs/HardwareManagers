@@ -4,12 +4,18 @@ from launch import LaunchDescription
 from launch_ros.actions import ComposableNodeContainer
 from launch_ros.descriptions import ComposableNode
 
+from datetime import datetime
+
 def generate_launch_description():
 
     ld = LaunchDescription()
 
     log_path = "/DroneWorkspace/data/"
-    log_id = "test_log7"
+
+    now = datetime.now()
+
+    log_id = str(now)
+    print(log_id)
 
     namespace = 'hardware'
     ld.add_action(ComposableNodeContainer(
