@@ -15,6 +15,13 @@
 namespace ircamera_manager
 {
 
+enum cameraTempRange
+{
+    LOW,
+    MID,
+    HIGH
+};
+
 class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
 {
     public:
@@ -37,6 +44,7 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
 
         // Current Flag State
         evo::EnumFlagState flagstate_;
+        cameraTempRange cameraTempState_;
 
         // IR device parameters object, used to initialize device and imager
         evo::IRDeviceParams params_;

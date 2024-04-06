@@ -65,6 +65,8 @@ namespace ircamera_manager
         dev_->startStreaming();
         RCLCPP_INFO(this->get_logger(), "Started Streaming!");
 
+        cameraTempState_ = cameraTempRange::LOW;
+
         // Initialize the device thread runner
         run_ = true;
         deviceThread_ = new std::thread(&IRCameraManager::deviceThreadRunner, this);
@@ -157,32 +159,35 @@ namespace ircamera_manager
         bool validParam = false;
 
         // Low Range
-        if (rcCommand < 0)
+        if ((rcCommand < 0) && (cameraTempState_ != cameraTempRange::LOW))
         {
             validParam = imager_->setTempRange(-20, 100);
             if (validParam)
             {
                 imager_->forceFlagEvent(1000.f);
+                cameraTempState_ = cameraTempRange::LOW;
             }
         }
 
         // Mid Range
-        if (rcCommand == 0)
+        if ((rcCommand == 0) && (cameraTempState_ != cameraTempRange::MID))
         {
             validParam = imager_->setTempRange(0, 250);
             if (validParam)
             {
                 imager_->forceFlagEvent(1000.f);
+                cameraTempState_ = cameraTempRange::MID;
             }
         }
 
         // High Range
-        if (rcCommand > 0)
+        if ((rcCommand > 0) && (cameraTempState_ != cameraTempRange::HIGH))
         {
             validParam = imager_->setTempRange(150, 900);
             if (validParam)
             {
                 imager_->forceFlagEvent(1000.f);
+                cameraTempState_ = cameraTempRange::HIGH;
             }
         }
     }
