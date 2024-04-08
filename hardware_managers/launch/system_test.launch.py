@@ -21,7 +21,7 @@ def generate_launch_description():
         namespace=namespace,
         name=namespace,
         package='rclcpp_components',
-        executable='component_container', # single-threaded callback execution
+        executable='component_container', # multi-threaded callback execution
         composable_node_descriptions=[
             ComposableNode(
                 package="streamer",
@@ -36,6 +36,13 @@ def generate_launch_description():
                 namespace=namespace,
                 name='ircamera_manager',
                 parameters=[],
+            ),
+            ComposableNode(
+                package='logger',
+                plugin='logger::Logger',
+                namespace=namespace,
+                name='logger',
+                parameters=[{'log_prefix': log_id, 'log_path': log_path}],
             ),
         ],
         output='screen',
