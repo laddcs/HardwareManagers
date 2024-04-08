@@ -63,7 +63,7 @@ namespace logger
         writer_->write(msg, "/hardware/thermal_image", rclcpp::Node::now());
     }
 
-    void Logger::flagCB(const hardware_msgs::msg::Flag::ConstPtr msg)
+    void Logger::flagCB(const hardware_msgs::msg::Flag::ConstSharedPtr msg)
     {
         if (!bagOpen_) {return;}
         writer_->write(msg, "/hardware/flag_state", rclcpp::Node::now());
