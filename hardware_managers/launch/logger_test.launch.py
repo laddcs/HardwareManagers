@@ -24,18 +24,11 @@ def generate_launch_description():
         executable='component_container', # single-threaded callback execution
         composable_node_descriptions=[
             ComposableNode(
-                package="streamer",
-                plugin='streamer::Streamer',
+                package='logger',
+                plugin='logger::Logger',
                 namespace=namespace,
-                name='streamer',
-                parameters=[],
-            ),
-            ComposableNode(
-                package="ircamera_manager",
-                plugin='ircamera_manager::IRCameraManager',
-                namespace=namespace,
-                name='ircamera_manager',
-                parameters=[],
+                name='logger',
+                parameters=[{'log_prefix': log_id, 'log_path': log_path}],
             ),
         ],
         output='screen',

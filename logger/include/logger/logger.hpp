@@ -39,10 +39,10 @@ class Logger : public rclcpp::Node
         // Subscription Callbacks
         void thermalCB(const sensor_msgs::msg::Image::ConstSharedPtr msg);
 
-        void flagCB(const hardware_msgs::msg::Flag::ConstPtr msg);
+        void flagCB(const hardware_msgs::msg::Flag::ConstSharedPtr msg);
 
-        void px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstPtr msg);
-        void px4VehicleOdometryCB(const px4_msgs::msg::VehicleOdometry::ConstPtr msg);
+        void px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstSharedPtr msg);
+        void px4VehicleOdometryCB(const px4_msgs::msg::VehicleOdometry::ConstSharedPtr msg);
 
         void initializeParameters();
 

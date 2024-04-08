@@ -69,7 +69,7 @@ namespace logger
         writer_->write(msg, "/hardware/flag_state", rclcpp::Node::now());
     }
 
-    void Logger::px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstPtr msg)
+    void Logger::px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstSharedPtr msg)
     {
         
 
@@ -99,7 +99,7 @@ namespace logger
         }
     }
 
-    void Logger::px4VehicleOdometryCB(const px4_msgs::msg::VehicleOdometry::ConstPtr msg)
+    void Logger::px4VehicleOdometryCB(const px4_msgs::msg::VehicleOdometry::ConstSharedPtr msg)
     {
         if (!bagOpen_) {return;}
         writer_->write(msg, "/hardware/vehicle_odometry", rclcpp::Node::now());
