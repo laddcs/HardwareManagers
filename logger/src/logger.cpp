@@ -57,22 +57,20 @@ namespace logger
         this->declare_parameter("log_path", rclcpp::ParameterValue("/DroneWorkspace/data/"));
     }
 
-    void Logger::thermalCB(const sensor_msgs::msg::Image::ConstSharedPtr msg)
+    void Logger::thermalCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
     {
         if (!bagOpen_) {return;}
-        writer_->write(msg, "/hardware/thermal_image", rclcpp::Node::now());
+        writer_->write(msg, "/hardware/thermal_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
     }
 
-    void Logger::flagCB(const hardware_msgs::msg::Flag::ConstSharedPtr msg)
+    void Logger::flagCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
     {
         if (!bagOpen_) {return;}
-        writer_->write(msg, "/hardware/flag_state", rclcpp::Node::now());
+        writer_->write(msg, "/hardware/flag_state", "hardware_msgs/msg/Flag", rclcpp::Node::now());
     }
 
     void Logger::px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstSharedPtr msg)
     {
-        
-
         // Open the bag on arming
         if ((msg->arming_state == msg->ARMING_STATE_ARMED) && !bagOpen_)
         {
@@ -80,12 +78,8 @@ namespace logger
             openBag();
             bagOpen_ = true;
 
-            writer_->write(msg, "/hardware/vehicle_status", rclcpp::Node::now());
-
             return;
         }
-
-        if (bagOpen_) {writer_->write(msg, "/hardware/vehicle_status", rclcpp::Node::now());}
 
         // Close the bag on disarm
         if ((msg->arming_state == msg->ARMING_STATE_SHUTDOWN) && bagOpen_)
@@ -99,10 +93,10 @@ namespace logger
         }
     }
 
-    void Logger::px4VehicleOdometryCB(const px4_msgs::msg::VehicleOdometry::ConstSharedPtr msg)
+    void Logger::px4VehicleOdometryCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
     {
         if (!bagOpen_) {return;}
-        writer_->write(msg, "/hardware/vehicle_odometry", rclcpp::Node::now());
+        writer_->write(msg, "/hardware/vehicle_odometry", "px4_msgs/msg/VehicleOdometry", rclcpp::Node::now());
     }
 
     void Logger::openBag()
