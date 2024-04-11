@@ -43,7 +43,7 @@ namespace streamer
             videoconvert ! \
             video/x-raw, format=I420 ! \
             queue ! \
-            x264enc tune=zerolatency bitrate=1000 speed-preset=superfast ! \
+            x264enc tune=zerolatency bitrate=2000 speed-preset=superfast ! \
             h264parse ! \
             rtph264pay ! \
             udpsink host=0.0.0.0 port=5602";
