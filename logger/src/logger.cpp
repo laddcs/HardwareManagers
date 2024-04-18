@@ -44,6 +44,12 @@ namespace logger
             qos,
             std::bind(&Logger::px4VehicleOdometryCB, this, _1)
         );
+
+        px4GimbalStatusSub_ = this->create_subscription<px4_msgs::msg::GimbalDeviceAttitudeStatus>(
+            "/fmu/out/gimbal_device_attitude_status",
+            qos,
+            std::bind(&Logger::px4GimbalStatusCB, this, _1)
+        );
     }
     
     Logger::~Logger()
@@ -99,6 +105,12 @@ namespace logger
         writer_->write(msg, "/hardware/vehicle_odometry", "px4_msgs/msg/VehicleOdometry", rclcpp::Node::now());
     }
 
+    void Logger::px4GimbalStatusCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    {
+        if (!bagOpen_) {return;}
+        writer_->write(msg, "/hardware/gimbal_device_attitude_status", "px4_msgs/msg/GimbalDeviceAttitudeStatus", rclcpp::Node::now());
+    }
+
     void Logger::openBag()
     {
         std::string filePath = this->get_parameter("log_path").as_string();
@@ -144,6 +156,15 @@ namespace logger
             }
         );
 
+        writer_->create_topic(
+            {
+                "/hardware/gimbal_device_attitude_status",
+                "px4_msgs/msg/GimbalDeviceAttitudeStatus",
+                rmw_get_serialization_format(), 
+                ""
+            }
+        );
+        
         bagNum_++;
     }
 
