@@ -11,6 +11,7 @@ namespace logger
         // Initialize Parameters
         initializeParameters();
 
+        testMode_ = this->get_parameter("log_test").as_bool();
         bagOpen_ = false;
         bagNum_ = 0;
 
@@ -50,6 +51,11 @@ namespace logger
             qos,
             std::bind(&Logger::px4GimbalStatusCB, this, _1)
         );
+
+        if (testMode_)
+        {
+            openBag();
+        }
     }
     
     Logger::~Logger()
@@ -61,6 +67,7 @@ namespace logger
     {
         this->declare_parameter("log_prefix", rclcpp::ParameterValue("log"));
         this->declare_parameter("log_path", rclcpp::ParameterValue("/DroneWorkspace/data/"));
+        this->declare_parameter("log_test", rclcpp::ParameterValue("0"));
     }
 
     void Logger::thermalCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
@@ -77,6 +84,11 @@ namespace logger
 
     void Logger::px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstSharedPtr msg)
     {
+        if (testMode_)
+        {
+            return;
+        }
+
         // Open the bag on arming
         if ((msg->arming_state == msg->ARMING_STATE_ARMED) && !bagOpen_)
         {

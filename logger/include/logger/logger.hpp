@@ -26,6 +26,7 @@ class Logger : public rclcpp::Node
         std::unique_ptr<rosbag2_cpp::Writer> writer_;
 
         // State
+        bool testMode_;
         bool bagOpen_;
         int bagNum_;
 

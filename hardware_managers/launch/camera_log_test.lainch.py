@@ -14,7 +14,7 @@ def generate_launch_description():
 
     log_path = "/DroneWorkspace/data/"
     log_id = now.isoformat()
-    log_test_mode = 0
+    log_test_mode = 1
     print(log_id)
 
     namespace = 'hardware'
