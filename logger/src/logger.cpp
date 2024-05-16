@@ -67,7 +67,7 @@ namespace logger
     {
         this->declare_parameter("log_prefix", rclcpp::ParameterValue("log"));
         this->declare_parameter("log_path", rclcpp::ParameterValue("/DroneWorkspace/data/"));
-        this->declare_parameter("log_test", rclcpp::ParameterValue("0"));
+        this->declare_parameter("log_test", rclcpp::ParameterValue(false));
     }
 
     void Logger::thermalCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
