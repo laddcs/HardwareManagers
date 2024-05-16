@@ -102,7 +102,7 @@ namespace ircamera_manager
 
             std::this_thread::sleep_for(durInSec);
 
-            RCLCPP_INFO(this->get_logger(), "RetVal: %i", retVal);
+            //RCLCPP_INFO(this->get_logger(), "RetVal: %i", retVal);
         }
     }
 

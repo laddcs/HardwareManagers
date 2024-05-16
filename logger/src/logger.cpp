@@ -54,7 +54,9 @@ namespace logger
 
         if (testMode_)
         {
+            RCLCPP_INFO(this->get_logger(), "Starting In Test Mode!");
             openBag();
+            bagOpen_ = true;
         }
     }
     
