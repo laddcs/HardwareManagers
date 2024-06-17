@@ -11,6 +11,7 @@
 #include <libirimager/IRDevice.h>
 #include <libirimager/IRImager.h>
 #include <libirimager/IRImagerClient.h>
+#include <libirimager/IRLogger.h>
 
 namespace ircamera_manager
 {

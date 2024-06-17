@@ -194,6 +194,12 @@ namespace ircamera_manager
 
     void IRCameraManager::initializeIRDevice()
     {
+        std::string logPath = this->get_parameter("logger_file_path").as_string();
+        std::string logName = this->get_parameter("logger_file_name").as_string();
+        std::string logfile = logPath + logName;
+
+        evo::IRLogger::setVerbosity(evo::IRLOG_ERROR, evo::IRLOG_DEBUG, logfile.c_str());
+
         std::string xmlPath = this->get_parameter("device_xml_config").as_string();
         evo::IRDeviceParamsReader::readXML(xmlPath.c_str(), params_);
 
@@ -219,7 +225,9 @@ namespace ircamera_manager
     void IRCameraManager::initializeParameters()
     {
         this->declare_parameter("device_xml_config", rclcpp::ParameterValue("/DroneWorkspace/HardwareManagers/ircamera_manager/config/generic.xml"));
-        this->declare_parameter("raw_file_path", rclcpp::ParameterValue(""));
+        this->declare_parameter("logger_file_name", rclcpp::ParameterValue("camera_log"));
+        this->declare_parameter("logger_file_path", rclcpp::ParameterValue("/DroneWorkspace/data/"));
+
     }
 } // namespace ircamera_manager
 
