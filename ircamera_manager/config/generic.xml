@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <imager xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <serial>23082143</serial>   <!-- Provide serial number, if you attach more than one camera -->
-  <videoformatindex>0</videoformatindex> <!-- index of the used video format resolution and framerate (USB enpoint): http://documentation.evocortex.com/libirimager2/html/index.html#sec_videoformat -->
+  <videoformatindex>4</videoformatindex> <!-- index of the used video format resolution and framerate (USB enpoint): http://documentation.evocortex.com/libirimager2/html/index.html#sec_videoformat -->
   <formatspath>/usr/share/libirimager</formatspath>
   <calipath>/usr/share/libirimager/cali</calipath>
   <dppath>/home/incarsaron/.irimager/Cali</dppath>
