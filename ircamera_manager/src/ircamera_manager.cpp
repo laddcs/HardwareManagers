@@ -215,7 +215,7 @@ namespace ircamera_manager
             resetFlag_ = false;
         }
 
-        if(cameraTempState_ == cameraReset::SET_OFF)
+        if(cameraResetState_ == cameraReset::SET_OFF)
         {
             dev_->stopStreaming();
             RCLCPP_INFO(this->get_logger(), "Camera Off!");
