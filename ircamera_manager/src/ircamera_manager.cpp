@@ -197,14 +197,35 @@ namespace ircamera_manager
         if ((resetCommand > 0) && (!resetFlag_))
         {
             resetFlag_ = true;
-            if(dev_->stopStreaming())
+            if(cameraResetState_ == cameraReset::ON)
             {
-                dev_->startStreaming();
-                resetFlag_ = false;
+                cameraResetState_ = cameraReset::SET_OFF;
+            }
+
+            if(cameraResetState_ == cameraReset::OFF)
+            {
+                cameraResetState_ = cameraReset::SET_ON;
             }
         }
 
+        if(resetCommand < 0)
+        {
+            resetFlag_ = false;
+        }
 
+        if(cameraTempState_ == cameraReset::SET_OFF)
+        {
+            dev_->stopStreaming();
+            RCLCPP_INFO(this->get_logger(), "Camera Off!");
+            cameraResetState_ = cameraReset::OFF;
+        }
+
+        if(cameraResetState_ == cameraReset::SET_ON)
+        {
+            dev_->startStreaming();
+            RCLCPP_INFO(this->get_logger(), "Camera On!");
+            cameraResetState_ = cameraReset::ON;
+        }
     }
 
     void IRCameraManager::initializeIRDevice()

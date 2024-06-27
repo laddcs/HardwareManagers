@@ -23,6 +23,14 @@ enum cameraTempRange
     HIGH
 };
 
+enum cameraReset
+{
+    SET_ON,
+    ON,
+    SET_OFF,
+    OFF
+};
+
 class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
 {
     public:
@@ -46,8 +54,9 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         // Current Flag State
         evo::EnumFlagState flagstate_;
         cameraTempRange cameraTempState_;
+        cameraReset cameraResetState_;
         bool resetFlag_;
-
+        
         // IR device parameters object, used to initialize device and imager
         evo::IRDeviceParams params_;
 
