@@ -99,7 +99,7 @@ namespace ircamera_manager
             {
                 return;
             } 
-
+            
             std::this_thread::sleep_for(durInSec);
 
             //RCLCPP_INFO(this->get_logger(), "RetVal: %i", retVal);
@@ -155,6 +155,7 @@ namespace ircamera_manager
         }
 
         double rcCommand = msg->channels[msg->function[msg->FUNCTION_AUX_2]];
+        double resetCommand = msg->channels[msg->function[msg->FUNCTION_AUX_3]];
 
         bool validParam = false;
 
@@ -190,6 +191,17 @@ namespace ircamera_manager
                 cameraTempState_ = cameraTempRange::HIGH;
             }
         }
+
+        // Reset the stream on command
+        if ((resetCommand > 0) && (!resetFlag_))
+        {
+            if(dev_->stopStreaming())
+            {
+                dev_->startStreaming();
+            }
+        }
+
+
     }
 
     void IRCameraManager::initializeIRDevice()

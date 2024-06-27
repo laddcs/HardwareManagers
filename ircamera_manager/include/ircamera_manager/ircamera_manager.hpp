@@ -46,6 +46,7 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         // Current Flag State
         evo::EnumFlagState flagstate_;
         cameraTempRange cameraTempState_;
+        bool resetFlag_;
 
         // IR device parameters object, used to initialize device and imager
         evo::IRDeviceParams params_;
