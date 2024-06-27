@@ -69,6 +69,7 @@ namespace ircamera_manager
 
         // Initialize the device thread runner
         run_ = true;
+        resetFlag_ = false;
         deviceThread_ = new std::thread(&IRCameraManager::deviceThreadRunner, this);
     }
 
@@ -195,9 +196,11 @@ namespace ircamera_manager
         // Reset the stream on command
         if ((resetCommand > 0) && (!resetFlag_))
         {
+            resetFlag_ = true;
             if(dev_->stopStreaming())
             {
                 dev_->startStreaming();
+                resetFlag_ = false;
             }
         }
 

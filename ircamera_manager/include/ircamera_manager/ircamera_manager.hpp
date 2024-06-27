@@ -83,9 +83,6 @@ class IRCameraManager : public rclcpp::Node, public evo::IRImagerClient
         // Checks xml parameters, initializes the IR device with given paramters
         void initializeIRDevice();
 
-        // Initializes the IR file writer
-        void initializeFileWriter();
-
         // Initialize node parameters
         void initializeParameters();
 
