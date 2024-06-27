@@ -66,10 +66,12 @@ namespace ircamera_manager
         RCLCPP_INFO(this->get_logger(), "Started Streaming!");
 
         cameraTempState_ = cameraTempRange::LOW;
+        cameraResetState_ = cameraReset::ON;
+
+        resetFlag_ = false;
 
         // Initialize the device thread runner
         run_ = true;
-        resetFlag_ = false;
         deviceThread_ = new std::thread(&IRCameraManager::deviceThreadRunner, this);
     }
 
