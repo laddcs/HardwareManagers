@@ -137,6 +137,7 @@ namespace ircamera_manager
         msg.header.stamp = rclcpp::Node::now();
         msg.header.frame_id = "ircamera";
         msg.flag_state = flagstate;
+        msg.temp_range = cameraTempState_;
 
         // Set the internal flagstate
         flagstate_ = flagstate;
@@ -158,7 +159,6 @@ namespace ircamera_manager
         }
 
         double rcCommand = msg->channels[msg->function[msg->FUNCTION_AUX_2]];
-        double resetCommand = msg->channels[msg->function[msg->FUNCTION_AUX_3]];
 
         bool validParam = false;
 
@@ -170,6 +170,7 @@ namespace ircamera_manager
             {
                 imager_->forceFlagEvent(1000.f);
                 cameraTempState_ = cameraTempRange::LOW;
+                RCLCPP_INFO(this->get_logger(), "Temperature Range: LOW!");
             }
         }
 
@@ -181,6 +182,7 @@ namespace ircamera_manager
             {
                 imager_->forceFlagEvent(1000.f);
                 cameraTempState_ = cameraTempRange::MID;
+                RCLCPP_INFO(this->get_logger(), "Temperature Range: MID!");
             }
         }
 
@@ -192,41 +194,8 @@ namespace ircamera_manager
             {
                 imager_->forceFlagEvent(1000.f);
                 cameraTempState_ = cameraTempRange::HIGH;
+                RCLCPP_INFO(this->get_logger(), "Temperature Range: HIGH!");
             }
-        }
-
-        // Reset the stream on command
-        if ((resetCommand > 0) && (!resetFlag_))
-        {
-            resetFlag_ = true;
-            if(cameraResetState_ == cameraReset::ON)
-            {
-                cameraResetState_ = cameraReset::SET_OFF;
-            }
-
-            if(cameraResetState_ == cameraReset::OFF)
-            {
-                cameraResetState_ = cameraReset::SET_ON;
-            }
-        }
-
-        if(resetCommand < 0)
-        {
-            resetFlag_ = false;
-        }
-
-        if(cameraResetState_ == cameraReset::SET_OFF)
-        {
-            dev_->stopStreaming();
-            RCLCPP_INFO(this->get_logger(), "Camera Off!");
-            cameraResetState_ = cameraReset::OFF;
-        }
-
-        if(cameraResetState_ == cameraReset::SET_ON)
-        {
-            dev_->startStreaming();
-            RCLCPP_INFO(this->get_logger(), "Camera On!");
-            cameraResetState_ = cameraReset::ON;
         }
     }
 
@@ -265,7 +234,6 @@ namespace ircamera_manager
         this->declare_parameter("device_xml_config", rclcpp::ParameterValue("/DroneWorkspace/HardwareManagers/ircamera_manager/config/generic.xml"));
         this->declare_parameter("logger_file_name", rclcpp::ParameterValue("camera_log"));
         this->declare_parameter("logger_file_path", rclcpp::ParameterValue("/DroneWorkspace/data/"));
-
     }
 } // namespace ircamera_manager
 
