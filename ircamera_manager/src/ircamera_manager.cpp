@@ -210,13 +210,13 @@ namespace ircamera_manager
         std::string xmlPath = this->get_parameter("device_xml_config").as_string();
         evo::IRDeviceParamsReader::readXML(xmlPath.c_str(), params_);
 
-        RCLCPP_INFO(this->get_logger(), "Read XML Parameters!");
+        RCLCPP_INFO(this->get_logger(), "Read XML Parameters!!");
 
         dev_ = evo::IRDevice::IRCreateDevice(params_);
 
         bufferRaw_ = new unsigned char[dev_->getRawBufferSize()];
 
-        RCLCPP_INFO(this->get_logger(), "IR Device Initialized!");
+        RCLCPP_INFO(this->get_logger(), "IR Device Initialized!!");
 
         imager_ = new evo::IRImager();
 
