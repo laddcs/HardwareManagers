@@ -116,7 +116,7 @@ namespace streamer
         // Double the image size (Video writer throws a fit if the image is too small)
         cv::resize(frame_convert_, frame_out_, cv::Size(msg->width * 2, msg->height * 2));
 
-        writer_->write(frame_out_);
+        writer_.write(frame_out_);
     }
 
     void Streamer::imageCB_gpu(const sensor_msgs::msg::Image::ConstSharedPtr msg)
