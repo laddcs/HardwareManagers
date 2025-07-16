@@ -16,6 +16,12 @@
 namespace streamer
 {
 
+enum Imgproc
+{
+    GPU,
+    CPU
+};
+
 class Streamer : public rclcpp::Node
 {
     public:
@@ -30,6 +36,8 @@ class Streamer : public rclcpp::Node
 
         cv::cuda::GpuMat d_frame_convert_;
 
+        cv::Mat frame_convert_;
+
         cv::Mat frame_out_;
         cv::cuda::GpuMat d_frame_out_;
 
@@ -39,7 +47,8 @@ class Streamer : public rclcpp::Node
         // Video Streamer
         cv::VideoWriter writer_;
 
-        void imageCB(const sensor_msgs::msg::Image::ConstSharedPtr msg);
+        void imageCB_gpu(const sensor_msgs::msg::Image::ConstSharedPtr msg);
+        void imageCB_cpu(const sensor_msgs::msg::Image::ConstSharedPtr msg);
 };
 
 } // namespace streamer
