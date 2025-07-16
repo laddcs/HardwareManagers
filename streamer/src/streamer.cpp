@@ -18,7 +18,7 @@ namespace streamer
         size_t out_pixels = out_width * out_height * sizeof(unsigned  char); // 8 bit step
 
         // Get frame processing strategy from launch parameters
-        this->declare_parameter("imgproc", rclcpp::ParameterValue("0"));
+        this->declare_parameter("imgproc", rclcpp::ParameterValue(1));
         int imgproc = this->get_parameter("imgproc").as_int();
 
         // Allocate frame buffers
