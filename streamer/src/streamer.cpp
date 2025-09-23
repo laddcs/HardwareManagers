@@ -22,30 +22,9 @@ namespace streamer
         int imgproc = this->get_parameter("imgproc").as_int();
 
         // Allocate frame buffers
-        if (imgproc == Imgproc::CPU)
-        {
-            frame_in_ = cv::Mat(in_height, in_width, CV_16UC1);
-            frame_convert_ = cv::Mat(in_height, in_width, CV_8UC1);
-            frame_out_ = cv::Mat(out_height, out_width, CV_8UC1);
-        } 
-        else if (imgproc == Imgproc::GPU)
-        {
-            void *unified_frame_in_ptr;
-            void *unified_frame_out_ptr;
-
-            // Allocate unified buffers
-            cudaMallocManaged(&unified_frame_in_ptr, in_pixels);
-            cudaMallocManaged(&unified_frame_out_ptr, out_pixels);
-
-            // Create image processing containers using unified buffers
-            frame_in_ = cv::Mat(in_height, in_width, CV_16UC1, unified_frame_in_ptr);
-            d_frame_in_ = cv::cuda::GpuMat(in_height, in_width, CV_16UC1, unified_frame_in_ptr);
-
-            d_frame_convert_ = cv::cuda::GpuMat(in_height, in_width, CV_8UC1);
-
-            frame_out_ = cv::Mat(out_height, out_width, CV_8UC1, unified_frame_out_ptr);
-            d_frame_out_ = cv::cuda::GpuMat(out_height, out_width, CV_8UC1, unified_frame_out_ptr);
-        }
+        frame_in_ = cv::Mat(in_height, in_width, CV_16UC1);
+        frame_convert_ = cv::Mat(in_height, in_width, CV_8UC1);
+        frame_out_ = cv::Mat(out_height, out_width, CV_8UC1);
 
         // Set QoS profile for node
         rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
@@ -72,23 +51,11 @@ namespace streamer
             return;
         }
 
-        // Create subscribers
-        if (imgproc == Imgproc::CPU)
-        {
-            imageSub_ = this->create_subscription<sensor_msgs::msg::Image>(
-                "/hardware/thermal_image",
-                qos,
-                std::bind(&Streamer::imageCB_cpu, this, _1)
-            );
-        }
-        else if (imgproc == Imgproc::GPU)
-        {
-            imageSub_ = this->create_subscription<sensor_msgs::msg::Image>(
-                "/hardware/thermal_image",
-                qos,
-                std::bind(&Streamer::imageCB_gpu, this, _1)
-            );
-        }
+        imageSub_ = this->create_subscription<sensor_msgs::msg::Image>(
+            "/hardware/thermal_image",
+            qos,
+            std::bind(&Streamer::imageCB_cpu, this, _1)
+        );
     }
 
     Streamer::~Streamer()
@@ -117,28 +84,6 @@ namespace streamer
         cv::resize(frame_convert_, frame_out_, cv::Size(msg->width * 2, msg->height * 2));
 
         writer_->write(frame_out_);
-    }
-
-    void Streamer::imageCB_gpu(const sensor_msgs::msg::Image::ConstSharedPtr msg)
-    {
-        double frame_in_min;
-        double frame_in_max;
-        double delta_in;
-
-        // Copy image into mapped frame
-        memcpy(&frame_in_.data[0], &msg->data[0], msg->height * msg->step * sizeof(unsigned char));
-
-        // Find min/max image values
-        cv::cuda::minMax(d_frame_in_, &frame_in_min, &frame_in_max);
-        delta_in = frame_in_max - frame_in_min;
-
-        // Convert from 16 bit unsigned int to 8 bit unsigned int, scale to fit 8 bit range based on image min/max
-        d_frame_in_.convertTo(d_frame_convert_, CV_8UC1, 255. / delta_in, -frame_in_min * 255. / delta_in);
-
-        // Double the image size (Video writer throws a fit if the image is too small)
-        cv::cuda::resize(d_frame_convert_, d_frame_out_, cv::Size(msg->width * 2, msg->height * 2));
-
-        writer_.write(frame_out_);
     }
 } // namespace streamer
 
