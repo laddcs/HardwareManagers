@@ -231,9 +231,9 @@ namespace ircamera_manager
 
     void IRCameraManager::initializeParameters()
     {
-        this->declare_parameter("device_xml_config", rclcpp::ParameterValue("/DroneWorkspace/HardwareManagers/ircamera_manager/config/generic.xml"));
+        this->declare_parameter("device_xml_config", rclcpp::ParameterValue("/home/hex/DroneWorkspace/HardwareManagers/ircamera_manager/config/generic.xml"));
         this->declare_parameter("logger_file_name", rclcpp::ParameterValue("camera_log"));
-        this->declare_parameter("logger_file_path", rclcpp::ParameterValue("/DroneWorkspace/data/"));
+        this->declare_parameter("logger_file_path", rclcpp::ParameterValue("/home/hex/data/"));
     }
 } // namespace ircamera_manager
 
