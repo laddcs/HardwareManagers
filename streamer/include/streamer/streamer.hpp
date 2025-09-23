@@ -11,12 +11,6 @@
 namespace streamer
 {
 
-enum Imgproc
-{
-    GPU,
-    CPU
-};
-
 class Streamer : public rclcpp::Node
 {
     public:

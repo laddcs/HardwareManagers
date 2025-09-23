@@ -14,13 +14,6 @@ namespace streamer
         unsigned int out_width = in_width * 2;
         unsigned int out_height = in_height * 2;
 
-        size_t in_pixels = in_width * in_height * sizeof(unsigned  short); // 16 bit step
-        size_t out_pixels = out_width * out_height * sizeof(unsigned  char); // 8 bit step
-
-        // Get frame processing strategy from launch parameters
-        this->declare_parameter("imgproc", rclcpp::ParameterValue("0"));
-        int imgproc = this->get_parameter("imgproc").as_int();
-
         // Allocate frame buffers
         frame_in_ = cv::Mat(in_height, in_width, CV_16UC1);
         frame_convert_ = cv::Mat(in_height, in_width, CV_8UC1);
