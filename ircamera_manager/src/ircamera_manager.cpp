@@ -159,13 +159,14 @@ namespace ircamera_manager
             RCLCPP_INFO(this->get_logger(), "Reset Camera!");
             run_ = false;
             deviceThread_->join();
-            //dev_->stopStreaming();
+            dev_->stopStreaming();
+            dev_->closeDevice();
+            dev_->openDevice();
             if (imager_->reconnect(&params_, dev_->getFrequency(), dev_->getWidth(), dev_->getHeight(), dev_->controlledViaHID()))
             {
-                imager_->setClient(this);
                 RCLCPP_INFO(this->get_logger(), "Success!");
                 run_ = true;
-                //dev_->startStreaming();
+                dev_->startStreaming();
                 deviceThread_ = new std::thread(&IRCameraManager::deviceThreadRunner, this);
             }else
             {
