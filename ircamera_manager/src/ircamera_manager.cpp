@@ -167,10 +167,11 @@ namespace ircamera_manager
 
             if (imager_->reconnect(&params_, dev_->getFrequency(), dev_->getWidth(), dev_->getHeight(), dev_->controlledViaHID()))
             {
-                RCLCPP_INFO(this->get_logger(), "Success!");
                 run_ = true;
                 dev_->startStreaming();
                 deviceThread_ = new std::thread(&IRCameraManager::deviceThreadRunner, this);
+
+                RCLCPP_INFO(this->get_logger(), "Success!");
             }else
             {
                 RCLCPP_ERROR(this->get_logger(), "Reset Failed");
