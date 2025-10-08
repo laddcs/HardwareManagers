@@ -152,6 +152,32 @@ namespace ircamera_manager
 
     void IRCameraManager::rcCB(const px4_msgs::msg::RcChannels::UniquePtr & msg)
     {
+        double resetCommand = msg->channels[8];
+        // Reset the Camera
+        if(resetCommand > 0)
+        {
+            RCLCPP_INFO(this->get_logger(), "Reset Camera!");
+
+            run_ = false;
+            deviceThread_->join();
+            dev_->stopStreaming();
+            delete dev_;
+
+            dev_ = evo::IRDevice::IRCreateDevice(params_);
+
+            if (imager_->reconnect(&params_, dev_->getFrequency(), dev_->getWidth(), dev_->getHeight(), dev_->controlledViaHID()))
+            {
+                run_ = true;
+                dev_->startStreaming();
+                deviceThread_ = new std::thread(&IRCameraManager::deviceThreadRunner, this);
+
+                RCLCPP_INFO(this->get_logger(), "Success!");
+            }else
+            {
+                RCLCPP_ERROR(this->get_logger(), "Reset Failed");
+            }
+        }
+
         // If the flag is not open, do not attempt to change the temp range
         if (flagstate_ != evo::EnumFlagState::irFlagOpen)
         {
