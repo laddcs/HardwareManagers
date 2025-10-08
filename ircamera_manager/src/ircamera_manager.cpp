@@ -162,6 +162,7 @@ namespace ircamera_manager
             dev_->stopStreaming();
             if (imager_->reconnect(&params_, dev_->getFrequency(), dev_->getWidth(), dev_->getHeight(), dev_->controlledViaHID()))
             {
+                imager_->setClient(this);
                 RCLCPP_INFO(this->get_logger(), "Success!");
                 run_ = true;
                 dev_->startStreaming();
