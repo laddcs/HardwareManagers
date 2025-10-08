@@ -157,11 +157,14 @@ namespace ircamera_manager
         if(resetCommand > 0)
         {
             RCLCPP_INFO(this->get_logger(), "Reset Camera!");
+
             run_ = false;
             deviceThread_->join();
             dev_->stopStreaming();
-            dev_->closeDevice();
-            dev_->openDevice();
+            delete dev_;
+
+            dev_ = evo::IRDevice::IRCreateDevice(params_);
+
             if (imager_->reconnect(&params_, dev_->getFrequency(), dev_->getWidth(), dev_->getHeight(), dev_->controlledViaHID()))
             {
                 RCLCPP_INFO(this->get_logger(), "Success!");
