@@ -18,17 +18,26 @@ namespace calib_tool
         rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
         auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
+        rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
+        auto px4_qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
+
         imageSub_ = this->create_subscription<sensor_msgs::msg::Image>(
             "/hardware/thermal_image",
             qos,
             std::bind(&Calib_tool::imageCB_cpu, this, _1)
         );
 
+        rcSub_ = this->create_subscription<px4_msgs::msg::RcChannels>(
+            "/fmu/out/rc_channels",
+            px4_qos,
+            std::bind(&Calib_tool::rcCB, this, _1)
+        );
+
         save_frame_ = false;
         frame_count_ = 0;
 
         //std::string filePath_ = this->get_parameter("log_path").as_string();
-        std::string filePath_ = "/home/hex/data/";
+        std::string filePath_ = "/home/hex/data/calib/";
         
     }
 
@@ -54,6 +63,8 @@ namespace calib_tool
             frame_in_.convertTo(frame_out_, CV_8UC1, 255. / delta_in, -frame_in_min * 255. / delta_in);
 
             writeString_ = filePath_ + prefix_ + std::to_string(frame_count_) + ".png";
+
+            RCLCPP_INFO(this->get_logger(), writeString_.c_str());
 
             // Save the frame
             cv::imwrite(writeString_, frame_out_);
