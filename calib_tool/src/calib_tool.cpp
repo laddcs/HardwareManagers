@@ -18,7 +18,6 @@ namespace calib_tool
         rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
         auto qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
-        rmw_qos_profile_t qos_profile = rmw_qos_profile_sensor_data;
         auto px4_qos = rclcpp::QoS(rclcpp::QoSInitialization(qos_profile.history, 5), qos_profile);
 
         imageSub_ = this->create_subscription<sensor_msgs::msg::Image>(
