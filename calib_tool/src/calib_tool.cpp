@@ -27,7 +27,8 @@ namespace calib_tool
         save_frame_ = false;
         frame_count_ = 0;
 
-        std::string filePath_ = this->get_parameter("log_path").as_string();
+        //std::string filePath_ = this->get_parameter("log_path").as_string();
+        std::string filePath_ = "/home/hex/data/";
         
     }
 
