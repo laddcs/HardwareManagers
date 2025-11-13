@@ -61,7 +61,7 @@ namespace calib_tool
             // Convert from 16 bit unsigned int to 8 bit unsigned int, scale to fit 8 bit range based on image min/max
             frame_in_.convertTo(frame_out_, CV_8UC1, 255. / delta_in, -frame_in_min * 255. / delta_in);
 
-            writeString_ = filePath_ + prefix_ + std::to_string(frame_count_) + ".png";
+            writeString_ = "/home/hex/data/calib/image_" + std::to_string(frame_count_) + ".png";
 
             RCLCPP_INFO(this->get_logger(), writeString_.c_str());
 
