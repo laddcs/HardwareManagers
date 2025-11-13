@@ -152,7 +152,7 @@ namespace ircamera_manager
 
     void IRCameraManager::rcCB(const px4_msgs::msg::RcChannels::UniquePtr & msg)
     {
-        double resetCommand = msg->channels[8];
+        /*double resetCommand = msg->channels[8];
         // Reset the Camera
         if(resetCommand > 0)
         {
@@ -176,7 +176,7 @@ namespace ircamera_manager
             {
                 RCLCPP_ERROR(this->get_logger(), "Reset Failed");
             }
-        }
+        }*/
 
         // If the flag is not open, do not attempt to change the temp range
         if (flagstate_ != evo::EnumFlagState::irFlagOpen)
