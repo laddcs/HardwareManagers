@@ -52,7 +52,7 @@ ament_target_dependencies(calib_tool
 target_link_libraries(calib_tool 
 	${OpenCV_LIBS} )
 
-rclcpp_components_register_nodes(calib_tool "calib_tool::calib_tool")
+rclcpp_components_register_nodes(calib_tool "calib_tool::Calib_tool")
 
 ############
 # Install ##

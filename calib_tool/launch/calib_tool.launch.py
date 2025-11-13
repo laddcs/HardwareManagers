@@ -43,7 +43,7 @@ def generate_launch_description():
                 package='calib_tool',
                 plugin='calib_tool::Calib_tool',
                 namespace=namespace,
-                name='logger',
+                name='calib_tool',
                 parameters=[{'log_path': log_path}],
             ),
         ],
