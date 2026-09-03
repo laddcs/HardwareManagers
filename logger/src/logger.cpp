@@ -13,6 +13,7 @@ namespace logger
 
         testMode_ = this->get_parameter("log_test").as_bool();
         bagOpen_ = false;
+        hasHome_ = false;
         bagNum_ = 0;
 
         // Set QoS profile for node
@@ -44,6 +45,12 @@ namespace logger
             "/fmu/out/vehicle_odometry",
             qos,
             std::bind(&Logger::px4VehicleOdometryCB, this, _1)
+        );
+
+        px4VehicleLocalPositionSub_ = this->create_subscription<px4_msgs::msg::VehicleLocalPosition>(
+            "/fmu/out/vehicle_local_position",
+            qos,
+            std::bind(&Logger::px4VehicleLocalPositionCB, this, _1)
         );
 
         px4GimbalStatusSub_ = this->create_subscription<px4_msgs::msg::GimbalDeviceAttitudeStatus>(
@@ -119,6 +126,29 @@ namespace logger
         writer_->write(msg, "/hardware/vehicle_odometry", "px4_msgs/msg/VehicleOdometry", rclcpp::Node::now());
     }
 
+    void Logger::px4VehicleLocalPositionCB(const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr msg)
+    {
+        if (msg->xy_global && msg->z_global && bagOpen_)
+        {
+            if (!hasHome_)
+            {
+                homeLat_ = msg->ref_lat;
+                homeLon_ = msg->ref_lon;
+                homeAlt_ = msg->ref_alt;
+
+                hasHome_ = true;
+            }else
+            {
+                if ((homeLat_ != msg->ref_lat) || (homeLon_ != msg->ref_lon) || (homeAlt_ != msg->ref_alt))
+                {
+                    homeLat_ = msg->ref_lat;
+                    homeLon_ = msg->ref_lon;
+                    homeAlt_ = msg->ref_alt;
+                }
+            }
+        }
+    }
+
     void Logger::px4GimbalStatusCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
     {
         if (!bagOpen_) {return;}
@@ -166,6 +196,15 @@ namespace logger
                 "/hardware/vehicle_odometry",
                 "px4_msgs/msg/VehicleOdometry",
                 rmw_get_serialization_format(), 
+                ""
+            }
+        );
+
+        writer_->create_topic(
+            {
+                "/hardware/vehicle_local_position",
+                "px4_msgs/msg/VehicleLocalPosition",
+                rmw_get_serialization_format(),
                 ""
             }
         );
