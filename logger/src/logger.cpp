@@ -126,9 +126,11 @@ namespace logger
         writer_->write(msg, "/hardware/vehicle_odometry", "px4_msgs/msg/VehicleOdometry", rclcpp::Node::now());
     }
 
-    void Logger::px4VehicleLocalPositionCB(const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr msg)
+    void Logger::px4VehicleLocalPositionCB(const std::shared_ptr<px4_msgs::msg::VehicleLocalPosition> msg)
     {
-        if (msg->xy_global && msg->z_global && bagOpen_)
+        if (!bagOpen_) {return;}
+        
+        if (msg->xy_global && msg->z_global)
         {
             if (!hasHome_)
             {
@@ -137,6 +139,10 @@ namespace logger
                 homeAlt_ = msg->ref_alt;
 
                 hasHome_ = true;
+
+                auto serialized_msg = std::make_shared<rclcpp::SerializedMessage>();
+                serializer_local_pos_.serialize_message(msg.get(), serialized_msg.get());
+                writer_->write(serialized_msg, "/hardware/vehicle_local_position", "px4_msgs/msg/VehicleLocalPosition", rclcpp::Node::now());
             }else
             {
                 if ((homeLat_ != msg->ref_lat) || (homeLon_ != msg->ref_lon) || (homeAlt_ != msg->ref_alt))
@@ -144,6 +150,10 @@ namespace logger
                     homeLat_ = msg->ref_lat;
                     homeLon_ = msg->ref_lon;
                     homeAlt_ = msg->ref_alt;
+
+                    auto serialized_msg = std::make_shared<rclcpp::SerializedMessage>();
+                    serializer_local_pos_.serialize_message(msg.get(), serialized_msg.get());
+                    writer_->write(serialized_msg, "/hardware/vehicle_local_position", "px4_msgs/msg/VehicleLocalPosition", rclcpp::Node::now());
                 }
             }
         }

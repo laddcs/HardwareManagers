@@ -46,13 +46,15 @@ class Logger : public rclcpp::Node
         rclcpp::Subscription<px4_msgs::msg::VehicleLocalPosition>::SharedPtr px4VehicleLocalPositionSub_;
         rclcpp::Subscription<px4_msgs::msg::GimbalDeviceAttitudeStatus>::SharedPtr px4GimbalStatusSub_;
 
+        rclcpp::Serialization<px4_msgs::msg::VehicleLocalPosition> serializer_local_pos_;
+
         // Subscription Callbacks
         void thermalCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
 
         void flagCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
 
         void px4StatusCB(const px4_msgs::msg::VehicleStatus::ConstSharedPtr msg);
-        void px4VehicleLocalPositionCB(const px4_msgs::msg::VehicleLocalPosition::ConstSharedPtr msg);
+        void px4VehicleLocalPositionCB(const std::shared_ptr<px4_msgs::msg::VehicleLocalPosition> msg);
         void px4VehicleOdometryCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
         void px4GimbalStatusCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
 
