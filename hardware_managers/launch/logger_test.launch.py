@@ -12,7 +12,7 @@ def generate_launch_description():
 
     now = datetime.now()
 
-    log_path = "/DroneWorkspace/data/"
+    log_path = "/home/hex/data/"
     log_id = str(now)
     print(log_id)
 

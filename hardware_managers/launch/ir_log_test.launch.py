@@ -10,7 +10,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    log_path = "/DroneWorkspace/data/"
+    log_path = "/home/hex/data/"
 
     now = datetime.now()
 
@@ -41,5 +41,21 @@ def generate_launch_description():
         ],
         output='screen',
     ))
+
+    ld.add_action(
+        Node(
+            package='v4l2_camera',
+            executable=''
+        )
+    )
+
+    ld.add_action(
+        Node(
+            package='micro_ros_agent',
+            executable='micro_ros_agent',
+            name='micro_ros_agent',
+            arguments=["udp4", "-p", "8888", "-v6"]
+        )
+    )
 
     return ld
