@@ -38,6 +38,7 @@ class Logger : public rclcpp::Node
 
         // Subscriptions
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr thermalSub_;
+        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr rgbSub_;
 
         rclcpp::Subscription<hardware_msgs::msg::Flag>::SharedPtr flagSub_;
 
@@ -50,6 +51,7 @@ class Logger : public rclcpp::Node
 
         // Subscription Callbacks
         void thermalCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
+        void rgbCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
 
         void flagCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
 

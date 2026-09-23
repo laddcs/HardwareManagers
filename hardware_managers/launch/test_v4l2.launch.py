@@ -1,149 +1,135 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.actions import OpaqueFunction
-from launch.conditions import LaunchConfigurationEquals
-from launch.conditions import LaunchConfigurationNotEquals
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import ComposableNodeContainer
-from launch_ros.actions import LoadComposableNodes
-from launch_ros.actions import SetParameter
-from launch_ros.descriptions import ComposableNode
-import yaml
+from launch_ros.actions import Node
 
-def launch_setup(context, *args, **kwargs):
-    def load_composable_node_param(param_path):
-        with open(LaunchConfiguration(param_path).perform(context), "r") as f:
-            return yaml.safe_load(f)["/**"]["ros__parameters"]
-
-    composable_nodes = [
-        ComposableNode(
-            package="v4l2_camera",
-            plugin="v4l2_camera::V4L2Camera",
-            name=['v4l2_camera_', LaunchConfiguration("camera_name")],
-            namespace=LaunchConfiguration("v4l2_camera_namespace"),
-            remappings=[
-                (
-                    "image_raw",
-                    [
-                        LaunchConfiguration("camera_name"),
-                        '/',
-                        LaunchConfiguration("image_topic"),
-                    ],
-                ),
-                (
-                    "image_raw/compressed",
-                    [
-                        LaunchConfiguration("camera_name"),
-                        '/',
-                        LaunchConfiguration("image_topic"),
-                        '/compressed',
-                    ],
-                ),
-                (
-                    "image_raw/compressedDepth",
-                    [
-                        LaunchConfiguration("camera_name"),
-                        '/',
-                        LaunchConfiguration("image_topic"),
-                        '/compressedDepth',
-                    ],
-                ),
-                (
-                    "image_raw/theora",
-                    [
-                        LaunchConfiguration("camera_name"),
-                        '/',
-                        LaunchConfiguration("image_topic"),
-                        '/theora',
-                    ],
-                ),
-                (
-                    "camera_info",
-                    [
-                        LaunchConfiguration("camera_name"),
-                        '/camera_info'
-                    ],
-                ),
-            ],
-            parameters=[
-                load_composable_node_param("v4l2_camera_param_path"),
-                load_composable_node_param("rate_diagnostics_param_path"),
-                {
-                    "camera_info_url": LaunchConfiguration("camera_info_url"),
-                    "use_sensor_data_qos": LaunchConfiguration("use_sensor_data_qos"),
-                    "publish_rate": LaunchConfiguration("publish_rate"),
-                    "use_v4l2_buffer_timestamps": LaunchConfiguration("use_v4l2_buffer_timestamps"),
-                    "use_image_transport": LaunchConfiguration("use_image_transport"),
-                    "hardware_id": LaunchConfiguration("hardware_id"),
-                },
-            ],
-            extra_arguments=[{"use_intra_process_comms": LaunchConfiguration("use_intra_process")}],
-        ),
-    ]
-
-    # If an existing container is not provided, start container and load nodes into it
-    v4l2_camera_container = ComposableNodeContainer(
-        condition=LaunchConfigurationEquals('container', ''),
-        name=['v4l2_camera_', LaunchConfiguration('camera_name'),  '_container'],
-        namespace='',
-        package='rclcpp_components',
-        executable='component_container_mt',
-        composable_node_descriptions=composable_nodes,
-        output='screen',
-    )
-
-    # If an existing container name is provided load composable nodes into it
-    # This will block until a container with the provided name is available and nodes are loaded
-    load_composable_nodes = LoadComposableNodes(
-        condition=LaunchConfigurationNotEquals('container', ''),
-        composable_node_descriptions=composable_nodes,
-        target_container=LaunchConfiguration('container'),
-    )
-
-    return [v4l2_camera_container, load_composable_nodes]
 
 def generate_launch_description():
-
-    launch_arguments = []
-
-    def add_launch_arg(name: str, default_value=None, description=None):
-        launch_arguments.append(DeclareLaunchArgument(name, default_value=default_value, description=description))
-
-    add_launch_arg('container', '',
-                   description='container name to load composable nodes into it. '
-                   'If it is not specified, a new container will be created')
-    add_launch_arg('image_topic',
-                   description='image topic name to be published')
-    add_launch_arg('camera_name',
-                   description='prefix to be added to the head of topic name')
-    add_launch_arg('v4l2_camera_namespace', '/sensing/camera',
-                   description='namespace in which the nodes launched')
-    add_launch_arg('v4l2_camera_param_path',
-                   description='path to the yaml file that contains parameters for v4l2_camera node')
-    add_launch_arg('rate_diagnostics_param_path',
-                   description='path to the yaml file that contains parameters for rate diagnostics')
-    add_launch_arg('camera_info_url',
-                   description='url to the yaml file that contains camera\'s intrinsic paramters')
-    add_launch_arg('use_intra_process', 'False',
-                   description='flag to use ROS2 intra process')
-    add_launch_arg('use_sensor_data_qos', 'False',
-                   description='flag to use sensor data QoS. '
-                   'If true, the reliability of image topic QoS will be BEST_EFFORT, '
-                   'otherwise be RELIABLE')
-    add_launch_arg('publish_rate', "-1.0",
-                   description='publish frame number per second. value <= 0 means no limitation on publish rate')
-    add_launch_arg('use_v4l2_buffer_timestamps', 'true',
-                   description='flag to use v4l2 buffer timestamps. '
-                   'If true, the image timestamps will be applied from the v4l2 buffer, '
-                   'otherwise, will be the system time when the buffer is read')
-    add_launch_arg('use_image_transport', 'true',
-                   description='flag to launch image_transport node')
-    add_launch_arg('hardware_id',
-                   description='hardware id of the camera')
-
     return LaunchDescription(
         [
-            *launch_arguments,
-            OpaqueFunction(function=launch_setup),
+            DeclareLaunchArgument(
+                "camera_name",
+                default_value="rgb_camera",
+                description="Name prefix used for the published image and camera_info topics.",
+            ),
+            DeclareLaunchArgument(
+                "camera_namespace",
+                default_value="/sensing/camera",
+                description="Namespace to launch the camera under.",
+            ),
+            DeclareLaunchArgument(
+                "image_topic",
+                default_value="rgb_image",
+                description="Topic name for the image stream.",
+            ),
+            DeclareLaunchArgument(
+                "video_device",
+                default_value="/dev/video0",
+                description="Linux V4L2 device path for the camera.",
+            ),
+            DeclareLaunchArgument(
+                "camera_frame_id",
+                default_value="camera",
+                description="TF frame id written into the image header.",
+            ),
+            DeclareLaunchArgument(
+                "image_width",
+                default_value="640",
+                description="Image width in pixels.",
+            ),
+            DeclareLaunchArgument(
+                "image_height",
+                default_value="480",
+                description="Image height in pixels.",
+            ),
+            DeclareLaunchArgument(
+                "frame_rate",
+                default_value="30",
+                description="Capture frame rate.",
+            ),
+            DeclareLaunchArgument(
+                "pixel_format",
+                default_value="yuyv2rgb",
+                description="V4L2 pixel format conversion mode used by the driver.",
+            ),
+            DeclareLaunchArgument(
+                "camera_info_url",
+                default_value="",
+                description="Optional camera calibration YAML URL.",
+            ),
+            DeclareLaunchArgument(
+                "publish_rate",
+                default_value="-1.0",
+                description="Publish rate cap in Hz; -1 disables throttling.",
+            ),
+            DeclareLaunchArgument(
+                "use_sensor_data_qos",
+                default_value="False",
+                description="Use sensor-data QoS for the image stream.",
+            ),
+            DeclareLaunchArgument(
+                "use_v4l2_buffer_timestamps",
+                default_value="True",
+                description="Use V4L2 buffer timestamps for image headers.",
+            ),
+            DeclareLaunchArgument(
+                "use_image_transport",
+                default_value="True",
+                description="Enable image_transport for the image stream.",
+            ),
+            Node(
+                package="v4l2_camera",
+                executable="v4l2_camera_node",
+                namespace=LaunchConfiguration("camera_namespace"),
+                name=LaunchConfiguration("camera_name"),
+                remappings=[
+                    ("image_raw", [LaunchConfiguration("camera_name"), "/", LaunchConfiguration("image_topic")]),
+                    (
+                        "image_raw/compressed",
+                        [
+                            LaunchConfiguration("camera_name"),
+                            "/",
+                            LaunchConfiguration("image_topic"),
+                            "/compressed",
+                        ],
+                    ),
+                    (
+                        "image_raw/compressedDepth",
+                        [
+                            LaunchConfiguration("camera_name"),
+                            "/",
+                            LaunchConfiguration("image_topic"),
+                            "/compressedDepth",
+                        ],
+                    ),
+                    (
+                        "image_raw/theora",
+                        [
+                            LaunchConfiguration("camera_name"),
+                            "/",
+                            LaunchConfiguration("image_topic"),
+                            "/theora",
+                        ],
+                    ),
+                    ("camera_info", [LaunchConfiguration("camera_name"), "/camera_info"]),
+                ],
+                parameters=[
+                    {
+                        "video_device": LaunchConfiguration("video_device"),
+                        "image_width": LaunchConfiguration("image_width"),
+                        "image_height": LaunchConfiguration("image_height"),
+                        "frame_rate": LaunchConfiguration("frame_rate"),
+                        "pixel_format": LaunchConfiguration("pixel_format"),
+                        "camera_frame_id": LaunchConfiguration("camera_frame_id"),
+                        "camera_name": LaunchConfiguration("camera_name"),
+                        "camera_info_url": LaunchConfiguration("camera_info_url"),
+                        "publish_rate": LaunchConfiguration("publish_rate"),
+                        "use_sensor_data_qos": LaunchConfiguration("use_sensor_data_qos"),
+                        "use_v4l2_buffer_timestamps": LaunchConfiguration("use_v4l2_buffer_timestamps"),
+                        "use_image_transport": LaunchConfiguration("use_image_transport"),
+                    }
+                ],
+                output="screen",
+            ),
         ]
     )

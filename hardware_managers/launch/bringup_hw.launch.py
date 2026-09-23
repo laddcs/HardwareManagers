@@ -14,7 +14,8 @@ def generate_launch_description():
     now = datetime.now()
 
     log_path = "/home/hex/data/"
-    log_id = now.isoformat()
+    log_id = "bag_" + now().strftime("%Y-%m-%d_%H-%M-%S")
+
     log_test_mode = False
     print(log_id)
 

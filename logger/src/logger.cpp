@@ -29,6 +29,12 @@ namespace logger
             std::bind(&Logger::thermalCB, this, _1)
         );
 
+        rgbSub_ = this->create_subscription<sensor_msgs::msg::Image>(
+            "/hardware/rgb_camera/rgb_image_throttled",
+            qos,
+            std::bind(&Logger::rgbCB, this, _1)
+        );
+
         flagSub_ = this->create_subscription<hardware_msgs::msg::Flag>(
             "/hardware/ir_flag",
             qos,
@@ -83,6 +89,12 @@ namespace logger
     {
         if (!bagOpen_) {return;}
         writer_->write(msg, "/hardware/thermal_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
+    }
+
+    void Logger::rgbCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    {
+        if (!bagOpen_) {return;}
+        writer_->write(msg, "/hardware/rgb_camera/rgb_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
     }
 
     void Logger::flagCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
@@ -177,6 +189,15 @@ namespace logger
         writer_->create_topic(
             {
                 "/hardware/thermal_image",
+                "sensor_msgs/msg/Image",
+                rmw_get_serialization_format(),
+                ""
+            }
+        );
+
+        writer_->create_topic(
+            {
+                "/hardware/rgb_camera/rgb_image",
                 "sensor_msgs/msg/Image",
                 rmw_get_serialization_format(),
                 ""
