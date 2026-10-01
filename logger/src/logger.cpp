@@ -35,6 +35,31 @@ namespace logger
             std::bind(&Logger::rgbCB, this, _1)
         );
 
+        // State estimator topics
+        measStateSub_ = this->create_subscription<sensor_msgs::msg::Image>(
+            "/autonomy/meas_image",
+            qos,
+            std::bind(&Logger::measStateCB, this, _1)
+        );
+        
+        tempStateSub_ = this->create_subscription<sensor_msgs::msg::Image>(
+            "/autonomy/temp_state_image",
+            qos,
+            std::bind(&Logger::tempStateCB, this, _1)
+        );
+
+        tempVarSub_ = this->create_subscription<sensor_msgs::msg::Image>(
+            "/autonomy/temp_var_image",
+            qos,
+            std::bind(&Logger::tempVarCB, this, _1)
+        );
+
+        fuelStateSub_ = this->create_subscription<sensor_msgs::msg::Image>(
+            "/autonomy/fuel_state_image",
+            qos,
+            std::bind(&Logger::fuelStateCB, this, _1)
+        );
+
         flagSub_ = this->create_subscription<hardware_msgs::msg::Flag>(
             "/hardware/ir_flag",
             qos,
@@ -95,6 +120,30 @@ namespace logger
     {
         if (!bagOpen_) {return;}
         writer_->write(msg, "/hardware/rgb_camera/rgb_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
+    }
+
+    void Logger::measStateCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    {
+        if (!bagOpen_) {return;}
+        writer_->write(msg, "/autonomy/meas_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
+    }
+
+    void Logger::tempStateCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    {
+        if (!bagOpen_) {return;}
+        writer_->write(msg, "/autonomy/temp_state_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
+    }
+
+    void Logger::tempVarCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    {
+        if (!bagOpen_) {return;}
+        writer_->write(msg, "/autonomy/temp_var_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
+    }
+
+    void Logger::fuelStateCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const
+    {
+        if (!bagOpen_) {return;}
+        writer_->write(msg, "/autonomy/fuel_state_image", "sensor_msgs/msg/Image", rclcpp::Node::now());
     }
 
     void Logger::flagCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const

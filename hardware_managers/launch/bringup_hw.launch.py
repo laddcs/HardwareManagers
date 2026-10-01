@@ -51,35 +51,35 @@ def generate_launch_description():
         output='screen',
     ))
 
-    # NOTE: v4l2_camera in ROS 2 Humble does not honor frame_rate or publish_rate as
-    # ROS parameters. The effective frame rate is set by the V4L2 device itself, and
-    # lowering the publishing frequency must be done downstream (for example with a
-    # throttle node) instead of using unsupported parameters here.
-    ld.add_action(
-        Node(
-            package='v4l2_camera',
-            executable='v4l2_camera_node',
-            namespace='/hardware',
-            name='rgb_camera',
-            remappings=[
-                ('image_raw', 'rgb_camera/rgb_image'),
-                ('image_raw/compressed', 'rgb_camera/rgb_image/compressed'),
-                ('image_raw/compressedDepth', 'rgb_camera/rgb_image/compressedDepth'),
-                ('image_raw/theora', 'rgb_camera/rgb_image/theora'),
-                ('camera_info', 'rgb_camera/camera_info'),
-            ],
-            parameters=[{
-                'video_device': '/dev/video0',
-                'image_size': [640, 480],
-                'pixel_format': 'yuyv',
-                'camera_frame_id': 'camera',
-                'camera_name': 'rgb_camera',
-                'camera_info_url': '',
-                'output_encoding': 'yuv422',
-            }],
-            output='screen',
-        )
-    )
+    #NOTE: v4l2_camera in ROS 2 Humble does not honor frame_rate or publish_rate as
+    #ROS parameters. The effective frame rate is set by the V4L2 device itself, and
+    #lowering the publishing frequency must be done downstream (for example with a
+    #throttle node) instead of using unsupported parameters here.
+    # ld.add_action(
+    #     Node(
+    #         package='v4l2_camera',
+    #         executable='v4l2_camera_node',
+    #         namespace='/hardware',
+    #         name='rgb_camera',
+    #         remappings=[
+    #             ('image_raw', 'rgb_camera/rgb_image'),
+    #             ('image_raw/compressed', 'rgb_camera/rgb_image/compressed'),
+    #             ('image_raw/compressedDepth', 'rgb_camera/rgb_image/compressedDepth'),
+    #             ('image_raw/theora', 'rgb_camera/rgb_image/theora'),
+    #             ('camera_info', 'rgb_camera/camera_info'),
+    #         ],
+    #         parameters=[{
+    #             'video_device': '/dev/video0',
+    #             'image_size': [640, 480],
+    #             'pixel_format': 'yuyv',
+    #             'camera_frame_id': 'camera',
+    #             'camera_name': 'rgb_camera',
+    #             'camera_info_url': '',
+    #             'output_encoding': 'yuv422',
+    #         }],
+    #         output='screen',
+    #     )
+    # )
 
     ld.add_action(
         Node(

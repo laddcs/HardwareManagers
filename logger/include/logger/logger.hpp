@@ -40,6 +40,11 @@ class Logger : public rclcpp::Node
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr thermalSub_;
         rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr rgbSub_;
 
+        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr measStateSub_;
+        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr tempStateSub_;
+        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr tempVarSub_;
+        rclcpp::Subscription<sensor_msgs::msg::Image>::SharedPtr fuelStateSub_;
+
         rclcpp::Subscription<hardware_msgs::msg::Flag>::SharedPtr flagSub_;
 
         rclcpp::Subscription<px4_msgs::msg::VehicleStatus>::SharedPtr px4StatusSub_;
@@ -52,6 +57,11 @@ class Logger : public rclcpp::Node
         // Subscription Callbacks
         void thermalCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
         void rgbCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
+
+        void measStateCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
+        void tempStateCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
+        void tempVarCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
+        void fuelStateCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
 
         void flagCB(std::shared_ptr<rclcpp::SerializedMessage> msg) const;
 
